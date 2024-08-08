@@ -6,7 +6,7 @@ import { useAuth } from '../hooks/useAuth';
 const LoginPage =() => {
     return(
         <div>
-            <div></div>
+            <div><h>Login</h></div>
         </div>
     );
 };
