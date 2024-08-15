@@ -42,7 +42,7 @@ router.post(
         );
 
         const newUser = {
-            id: (await generateID()).toString(),
+            userId: (await generateID()).toString(),
             userName,
             email,
             password: hashedPassword
@@ -53,47 +53,9 @@ router.post(
     })
 );
 
-router.post('/setAccess', handler(async (req, res) => {
-
-    const { userName, email, password } = req.body;
-
-    const user = await UserModel.findOne({ email });
-
-    if (user) {
-        res.status(BAD_REQUEST).send('User name already taken, please enter another!');
-        return;
-    }
-
-    const hashedPassword = await bcrypt.hash(
-        password,
-        PASSWORD_HASH_SALT_ROUNDS
-    );
-
-    const newUser = {
-        id: (await generateID()).toString(),
-        userName,
-        email,
-        password: hashedPassword
-    };
-
-    const result = await UserModel.create(newUser);
-    res.send(generateTokenResponse(result));
-}));
-
-router.post('/getAll', handler(async (req, res) => {
-
-    try {
-        const users = await UserModel.find({});
-        res.send(users);
-    } catch (error) {
-        res.status(BAD_REQUEST).send("Users not found");
-    }
-
-}));
-
 const generateTokenResponse = user => {
     const token = jwt.sign({
-        id: user.id,
+        userId: user.userId,
         userName: user.userName,
         email: user.email
     },
@@ -104,7 +66,7 @@ const generateTokenResponse = user => {
     );
 
     return {
-        id: user.id,
+        userId: user.userId,
         userName: user.userName,
         email: user.email,
         token,
@@ -114,7 +76,7 @@ const generateTokenResponse = user => {
 const generateID = async () => {
     var count = await UserModel.countDocuments();
 
-    while (await UserModel.findOne({ id: count.toString() })) {
+    while (await UserModel.findOne({ userId: count.toString() })) {
         count++;
     }
 

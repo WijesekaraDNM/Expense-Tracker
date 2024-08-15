@@ -9,10 +9,9 @@ const HomePage =() => {
     return(
         <div className=' w-full h-full bg-red'>
           <div className='w-full h-10 top-10 mt-10 bg-slate-400'>
-            <a href='/login'>login</a>
+            <a href='/'>login</a>
           </div>
-          <TransactionPage/>
-          
+          <TransactionPage/>   
         </div>
     );
 };

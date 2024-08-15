@@ -14,7 +14,7 @@ router.post('/addTransaction', handler(async (req, res) => {
     if ( !name || !type || !date || !category || !amount ) {
         return res.status(BAD_REQUEST).send("Missing required fields");
     }
-    const newID = await generateTransactionID(department); 
+    const newID = await generateTransactionID(type); 
     
     const newTransaction = {
         transactionId: newID,
@@ -37,7 +37,7 @@ router.post('/addTransaction', handler(async (req, res) => {
 }));
 
 router.patch('/updateTransaction/:transactionId', handler(async (req, res) => {
-    const { transactionID } = req.params;
+    const { transactionId } = req.params;
     const {name, type, date, category, amount, note} = req.body;
         // Validate required fields
         if ( !name || !type || !date || !category || !amount) {
@@ -47,7 +47,7 @@ router.patch('/updateTransaction/:transactionId', handler(async (req, res) => {
         let updateData = {name, type, date, category, amount, note};
 
         const updatedTransaction = await TransactionModel.findOneAndUpdate(
-            { transactionId: transactionID },
+            { transactionId: transactionId },
             updateData,
             { new: true }
         );
@@ -75,9 +75,10 @@ router.get('/categories', handler( async(req,res) => {
 }));
 
 router.delete('/deleteTransaction/:transactionId',handler(async(req,res) => {
-    const { transactionID } = req.params;
+    const { transactionId } = req.params;
     try{
-        const deleteTransactionItem = await TransactionModel.deleteOne({transactionId:transactionID});
+        const deleteTransactionItem = await TransactionModel.deleteOne({transactionId:transactionId});
+        console.log ("deleted transaction")
         res.send(deleteTransactionItem);
 
     } catch(error){
