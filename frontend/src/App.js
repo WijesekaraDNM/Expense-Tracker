@@ -5,17 +5,34 @@ import HomePage from "./components/HomePage";
 import LoginPage from "./components/LoginPage";
 import TransactionForm from "./components/common/transactionForm";
 import Registration from "./components/RegistrationPage";
+import PrivateRoute from "./components/common/PrivateRoute";
+import ForgotPassword from "./components/ForgotPassword";
+import { ResetPasswordPage } from "./components/ResetPasswordPage";
 
 function App() {
   return (
+    <AuthProvider>
       <BrowserRouter>
         <Routes>
-          <Route path="/home" element={<HomePage/>}/>
-          <Route path="/form" element={<TransactionForm/>}/>
           <Route path= "/" element={<LoginPage/>}/>
+          <Route path="/forgot-password" element={<ForgotPassword/>}/>
+          <Route path= "/reset-password/:token" element={<ResetPasswordPage/>}/>
+          {/* <Route path="/home" element={<HomePage/>}/>
+          <Route path="Form" element={<TransactionForm/>}/> */}
           <Route path="/register" element={<Registration/>}/>
+          <Route path="/home" element={
+            <PrivateRoute>
+                  <HomePage/>
+            </PrivateRoute>
+          }/> 
+           <Route path="/Form" element={
+            <PrivateRoute>
+                  <TransactionForm/>
+            </PrivateRoute>
+          }/> 
         </Routes>
       </BrowserRouter>
+    </AuthProvider>
   );
 }
 

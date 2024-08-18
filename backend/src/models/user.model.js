@@ -6,6 +6,8 @@ export const UserSchema = new Schema(
         userName : {type: String, required: true},
         email : {type:String, required:true},
         password : {type: String, required:true},
+        resetPasswordToken: { type: String }, // Field for the password reset token
+        resetPasswordExpires: { type: Date } 
     },
 
     {

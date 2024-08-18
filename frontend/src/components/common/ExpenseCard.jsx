@@ -1,13 +1,11 @@
-import React, { useEffect, useReducer } from "react";
+import React, { useReducer } from "react";
 import { FaXmark } from "react-icons/fa6";
 import { FaEdit } from "react-icons/fa";
-import { FaRegClock } from "react-icons/fa6";
 import { message } from "antd";
 import { MdDateRange } from "react-icons/md";
-import { GiTakeMyMoney } from "react-icons/gi";
 import { TiPlus } from "react-icons/ti";
 import { FaMinus } from "react-icons/fa";
-import { deleteTransaction, getTransactions } from "../../Services/transactionService";
+import { deleteTransaction } from "../../Services/transactionService";
 import { useNavigate } from "react-router-dom";
 
 const initialState = { transactionItems: [] };
@@ -68,8 +66,8 @@ const ExpenseCard = ({selection}) => {
       <td className="flex w-[15%] bg-white justify-start rounded lg:pl-3 pl-1 gap-1 items-center font-semibold text-center text-[0.8rem]">
       <MdDateRange />{selection.date}
       </td>
-      <td  className={`flex w-[15%] ${(selection.type=="Income")?"text-incomeAmount": "text-expenseAmount"} bg-white justify-start lg:pl-3 pl-1 gap-1 rounded items-center font-bold text-center text-[1rem]`} >
-      {selection.type == "Income"? <TiPlus />: <FaMinus />} Rs.{selection.amount}
+      <td  className={`flex w-[15%] ${(selection.type === "Income")?"text-incomeAmount": "text-expenseAmount"} bg-white justify-start lg:pl-3 pl-1 gap-1 rounded items-center font-bold text-center text-[1rem]`} >
+      {selection.type === "Income"? <TiPlus />: <FaMinus />} Rs.{selection.amount}
       </td>
       <td className="flex w-[15%]  gap-2 lg:pl-3 pl-1 bg-white justify-center rounded items-center font-semibold text-center text-[0.8rem]">
         <button type="submit" className="bg-red-600 shadow-[gray] shadow-md rounded-lg items-center justify-center focus:ring-4 focus:outline-none hover:bg-[red] focus:bg-slate-600 p-2 text-white font-semibold text-sm md:text-xl"

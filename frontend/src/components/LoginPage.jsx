@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { login } from "../Services/userService";
 import { Snackbar, Alert } from '@mui/material';
 import { FcGoogle } from "react-icons/fc";
+import { useAuth } from "../hooks/useAuth";
 
 const LoginPage = () => {
+  const { login } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [open, setOpen] = useState(false);
+  const [errors, setErrors] = useState({}); 
   const [snackMessage, setSnackMessage] = useState({message:"", severity:""});
 
   const navigate = useNavigate();
@@ -16,24 +18,47 @@ const LoginPage = () => {
     setOpen(false);
   }
 
+  const validate = () => {
+    const errors = {};
+
+    if (!email) {
+      errors.email = "Email is required";
+    } else if (!/\S+@\S+\.\S+/.test(email)) {
+      errors.email = "Email is invalid";
+    }
+
+    if (!password) {
+      errors.password = "Password is required";
+    } else if (password.length < 6) {
+      errors.password = "Password must be at least 6 characters";
+    }
+
+    return errors;
+  };
+
+
   const handleLogin = async (e) => {
     e.preventDefault();
-    if(email !== "" && password !== ""){
+    const validationErrors = validate();
+    if(Object.keys(validationErrors).length === 0 ){
       try {
         const data = {email:email, password: password};
-        const result = await login(data);
-        localStorage.setItem('token', result.token);
+        await login(data);
+        //localStorage.setItem('token', result.token);
         const message = {message:"Login Successful!", severity:"success"};
         setSnackMessage(message);
         navigate('/home');
   
       } catch (error){
-        const message = {message:"Login failed!", severity:"error"};
-        setSnackMessage(message);
+        let message = {message:"Loging Failed!", severity:"error"};
+        if (error.message === "Email or password incorrect") {
+          message = error.message;
+        }
+        setSnackMessage({ message, severity: "error" });
+
       }
     }else{
-      const message = {message:"Please provide valid email and password!", severity:"error"};
-      setSnackMessage(message);
+      setErrors(validationErrors);
     }
   };
 
@@ -54,23 +79,30 @@ const LoginPage = () => {
           <div className="relative my-5">
             <input
               type="email"
-              className="peer m-0 block h-[58px] border-[1px] focus:shadow-md focus:shadow-incomeBC border-solid border-golden w-full rounded bg-transparent bg-clip-padding px-3 py-4 text-base font-normal leading-tight text-neutral-700 transition duration-200 ease-linear placeholder:text-transparent focus:border-expenseBC focus:pb-[0.625rem] focus:pt-[1.625rem] focus:text-neutral-700 focus:outline-none peer-focus:text-black [&:not(:placeholder-shown)]:pb-[0.625rem] [&:not(:placeholder-shown)]:pt-[1.625rem]"
-              id="floatingInput"
-              placeholder="Username"
+              value={email}
+              className={`peer m-0 block h-[58px] border-[1px] focus:shadow-md focus:shadow-incomeBC border-solid border-golden w-full rounded bg-transparent bg-clip-padding px-3 py-4 text-base font-normal leading-tight text-neutral-700 transition duration-200 ease-linear placeholder:text-transparent focus:border-expenseBC focus:pb-[0.625rem] focus:pt-[1.625rem] focus:text-neutral-700 focus:outline-none peer-focus:text-black [&:not(:placeholder-shown)]:pb-[0.625rem] [&:not(:placeholder-shown)]:pt-[1.625rem]
+               ${errors.email? "border-error": ""} `}
+              id="floatingEmail"
+              placeholder="name@example.com"
               onChange={(e) => setEmail(e.target.value)}
             />
             <label
-              htmlFor="floatingInput"
+              htmlFor="floatingEmail"
               className="pointer-events-none absolute left-0 top-0 origin-[0_0] border border-solid border-transparent px-3 py-4 text-neutral-500 transition-[opacity,_transform] duration-200 ease-linear peer-focus:-translate-y-2 peer-focus:translate-x-[0.15rem] peer-focus:scale-[0.85] peer-focus:text-black peer-[:not(:placeholder-shown)]:-translate-y-2 peer-[:not(:placeholder-shown)]:translate-x-[0.15rem] peer-[:not(:placeholder-shown)]:scale-[0.85] motion-reduce:transition-none "
             >
               Email address
             </label>
+            {errors.email && (
+              <div className="text-error text-sm">{errors.email}</div>
+            )}
           </div>
 
           <div className="relative mt-5 mb-8">
             <input
               type="password"
-              className="peer m-0 block h-[58px] border-[1px] focus:shadow-md focus:shadow-incomeBC border-solid border-golden w-full rounded bg-transparent bg-clip-padding px-3 py-4 text-base font-normal leading-tight text-neutral-700 transition duration-200 ease-linear placeholder:text-transparent focus:border-expenseBC focus:pb-[0.625rem] focus:pt-[1.625rem] focus:text-neutral-700 focus:outline-none peer-focus:text-black [&:not(:placeholder-shown)]:pb-[0.625rem] [&:not(:placeholder-shown)]:pt-[1.625rem]"
+              value={password}
+              className={`peer m-0 block h-[58px] border-[1px] focus:shadow-md focus:shadow-incomeBC border-solid border-golden w-full rounded bg-transparent bg-clip-padding px-3 py-4 text-base font-normal leading-tight text-neutral-700 transition duration-200 ease-linear placeholder:text-transparent focus:border-expenseBC focus:pb-[0.625rem] focus:pt-[1.625rem] focus:text-neutral-700 focus:outline-none peer-focus:text-black [&:not(:placeholder-shown)]:pb-[0.625rem] [&:not(:placeholder-shown)]:pt-[1.625rem]
+                ${errors.password? "border-error": ""}`}
               id="floatingPassword"
               placeholder="Password"
               onChange={(e) => setPassword(e.target.value)}
@@ -81,8 +113,13 @@ const LoginPage = () => {
             >
               Password
             </label>
+            {errors.password && (
+              <div className="text-error text-sm">{errors.password}</div>
+            )}
             <p className="text-xs cursor-pointer hover:underline mt-2">
-              Forget password
+              <Link to="/forgot-password" className="text-expenseBC hover:underline">
+                Forgot Password?
+              </Link>
             </p>
           </div>
 

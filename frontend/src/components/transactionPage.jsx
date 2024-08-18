@@ -22,10 +22,10 @@ const reducer = (state, action) => {
 const TransactionPage = () => {
   const navigate = useNavigate();
   const [state, dispatch] = useReducer(reducer, initialState);
-  const [isIncomeCardPressed, setIsIncomeCardPressed] = useState(false);
-  const { transactionItems } = state;
-  const [isExpenseCardPressed, setIsExpenseCardPressed] = useState(false);
-  const [isPopupMenuOpened, setIsPopupMenuOpened] = useState(false);
+  // const [isIncomeCardPressed, setIsIncomeCardPressed] = useState(false);
+  // const { transactionItems } = state;
+  // const [isExpenseCardPressed, setIsExpenseCardPressed] = useState(false);
+  // const [isPopupMenuOpened, setIsPopupMenuOpened] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [categories, setCategories] = useState({ income: [], expense: [] });
   const [selectedTag, setSelectedTag] = useState("All");
@@ -93,11 +93,11 @@ const TransactionPage = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
-  const closePopup = () => {
-    setIsPopupMenuOpened(false);
-    setIsIncomeCardPressed(false);
-    setIsExpenseCardPressed(false);
-  };
+  // const closePopup = () => {
+  //   setIsPopupMenuOpened(false);
+  //   setIsIncomeCardPressed(false);
+  //   setIsExpenseCardPressed(false);
+  // };
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 p-2 gap-3 ">
@@ -190,13 +190,13 @@ const TransactionPage = () => {
           >
             <ul className=" flex gap-1 relative w-full !mt-[8.00px] !text-[12px] cursor-pointer px-1 ![font-family:'Inter',Helvetica]  items-start">
               <li key="1" className=" w-full">
-                <a
+                <p
                   className="flex relative transform items-center hover:bg-goldenHover hover:shadow-golden h-8 pl-5 shadow-sm transition-transform w-full hover:font-bold bg-transparent  hover:text-[black]"
                   onClick={() => handleTag("All")}
                 >
                   {" "}All{" "}
-                </a>
-                <a
+                </p>
+                <p
                   className="flex justify-start pl-5 items-center h-8 !text-[12px] hover:bg-goldenHover hover:shadow-golden shadow-sm relative transform transition-transform w-full hover:font-bold bg-transparent  hover:text-[black]"
                   onClick={() => handleTag("Income")}
                 >
@@ -214,8 +214,8 @@ const TransactionPage = () => {
                         </Option>
                       )}
                     </Select>}
-                </a>
-                <a
+                </p>
+                <p
                   className="flex relative items-center !text-[12px] h-8 transform pl-5 hover:bg-goldenHover hover:shadow-golden shadow-sm transition-transform w-full hover:font-bold bg-transparent  hover:text-[black]"
                   onClick={() => handleTag("Expense")}
                 >
@@ -233,7 +233,7 @@ const TransactionPage = () => {
                         </Option>
                       )}
                     </Select>}
-                </a>
+                </p>
               </li>
             </ul>
           </div>

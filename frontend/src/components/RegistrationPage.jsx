@@ -1,13 +1,14 @@
-import React,{useState} from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import {message} from "antd";
+import { message } from "antd";
 import { registration } from "../Services/userService";
 
 const Registration = () => {
-  const [userName,setName]=useState("")
-  const [email,setEmail]=useState("")
-  const [password,setPassword]=useState("")
-  const [errors, setErrors] = useState({});   
+  const [userName, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false);
 
   const validate = () => {
     const errors = {};
@@ -31,34 +32,32 @@ const Registration = () => {
     return errors;
   };
 
-
-  const handleRegister = async(e) =>{
+  const handleRegister = async e => {
     e.preventDefault();
     const validationErrors = validate();
     if (Object.keys(validationErrors).length === 0) {
-      
-        try {
-            const response= await registration(
-              {
-                userName:userName,
-                email: email,
-                password: password,
-              }
-            );
-            
-            localStorage.setItem('user',JSON.stringify(response));
-            message.success("User successfully registered");
-      
-            setName("");
-            setEmail("");
-            setPassword("");
-            
-            window.location.href = "/"
-      
-        } catch (error) {
-            message.error("System Error");
-        }
+      setLoading(true);
+      try {
+        const response = await registration({
+          userName: userName,
+          email: email,
+          password: password
+        });
 
+        localStorage.setItem("user", JSON.stringify(response));
+        message.success("User successfully registered");
+
+        setName("");
+        setEmail("");
+        setPassword("");
+        setTimeout(() => {
+          setLoading(false);
+          window.location.href = "/";
+          //navigate("/login");
+        }, 2000);
+      } catch (error) {
+        message.error("System Error");
+      }
     } else {
       setErrors(validationErrors);
     }
@@ -66,11 +65,16 @@ const Registration = () => {
 
   return (
     <div className="container mx-auto p-5 pt-20 mt-20 md:p-0">
+      {loading && (
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-100 bg-opacity-75 z-50">
+          <div className="loader ease-linear rounded-full border-8 border-t-8 border-incomeBC h-16 w-16"></div>
+        </div>
+      )}
       <div className="max-w-sm mx-auto bg-white px-10 py-10 rounded-2xl shadow-[0_8px_2px_-4px_#00DDA2,0_10px_20px_0_#334050]">
         <div className="text-center mb-8">
           <h1 className="font-bold text-3xl text-expenseBC">Registration</h1>
         </div>
-        <form >
+        <form>
           <div className="relative my-5">
             <input
               type="text"
@@ -80,17 +84,19 @@ const Registration = () => {
               `}
               id="exampleFormControlInputText"
               placeholder="Example label"
-              onChange={(e)=>setName(e.target.value)}
+              onChange={e => setName(e.target.value)}
               required
             />
             <label
               htmlFor="exampleFormControlInputText"
-              className="pointer-events-none absolute left-0 top-0 origin-[0_0] border border-solid border-transparent px-3 py-4 text-neutral-500 transition-[opacity,_transform] duration-200 ease-linear peer-focus:-translate-y-2 peer-focus:translate-x-[0.15rem] peer-focus:scale-[0.85] peer-focus:text-black peer-[:not(:placeholder-shown)]:-translate-y-2 peer-[:not(:placeholder-shown)]:translate-x-[0.15rem] peer-[:not(:placeholder-shown)]:scale-[0.85] motion-reduce:transition-none">
-                User Name
+              className="pointer-events-none absolute left-0 top-0 origin-[0_0] border border-solid border-transparent px-3 py-4 text-neutral-500 transition-[opacity,_transform] duration-200 ease-linear peer-focus:-translate-y-2 peer-focus:translate-x-[0.15rem] peer-focus:scale-[0.85] peer-focus:text-black peer-[:not(:placeholder-shown)]:-translate-y-2 peer-[:not(:placeholder-shown)]:translate-x-[0.15rem] peer-[:not(:placeholder-shown)]:scale-[0.85] motion-reduce:transition-none"
+            >
+              User Name
             </label>
-            {errors.userName && (
-              <div className="text-error text-sm">{errors.userName}</div>
-            )}
+            {errors.userName &&
+              <div className="text-error text-sm">
+                {errors.userName}
+              </div>}
           </div>
           <div className="relative my-5">
             <input
@@ -100,7 +106,7 @@ const Registration = () => {
                ${errors.email ? "border-error" : ""} `}
               id="floatingInput"
               placeholder="name@example.com"
-              onChange={(e)=>setEmail(e.target.value)}
+              onChange={e => setEmail(e.target.value)}
               required
             />
             <label
@@ -109,9 +115,10 @@ const Registration = () => {
             >
               Email address
             </label>
-            {errors.email && (
-                <div className="text-error text-sm">{errors.email}</div>
-            )}
+            {errors.email &&
+              <div className="text-error text-sm">
+                {errors.email}
+              </div>}
           </div>
 
           <div className="relative mt-5">
@@ -119,10 +126,10 @@ const Registration = () => {
               type="password"
               value={password}
               className={`peer m-0 block h-[58px] w-full border-[1px] focus:shadow-md border-golden rounded border-solid bg-transparent bg-clip-padding px-3 py-4 text-base font-normal leading-tight text-neutral-700 transition duration-200 ease-linear placeholder:text-transparent focus:border-expenseBC  focus:pb-[0.625rem] focus:pt-[1.625rem] focus:text-neutral-700 focus:shadow-incomeBC focus:outline-none peer-focus:text-expenseBC [&:not(:placeholder-shown)]:pb-[0.625rem] [&:not(:placeholder-shown)]:pt-[1.625rem]
-                ${errors.password? "border-error" : ""}`}
+                ${errors.password ? "border-error" : ""}`}
               id="floatingPassword"
               placeholder="Password"
-              onChange={(e)=>setPassword(e.target.value)}
+              onChange={e => setPassword(e.target.value)}
               required
             />
             <label
@@ -131,9 +138,10 @@ const Registration = () => {
             >
               Password
             </label>
-            {errors.password && ( 
-                <div className="text-error text-sm">{errors.password}</div>
-            )}
+            {errors.password &&
+              <div className="text-error text-sm">
+                {errors.password}
+              </div>}
           </div>
 
           <button
