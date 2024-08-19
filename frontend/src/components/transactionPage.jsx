@@ -4,6 +4,7 @@ import  ExpenseCard  from "./common/ExpenseCard";
 import { useNavigate } from "react-router-dom";
 import { FaXmark, FaBars } from "react-icons/fa6";
 import { getCategories, getTransactions } from "../Services/transactionService";
+import { useAuth } from "../hooks/useAuth";
 
 const { Option } = Select;
 
@@ -21,6 +22,7 @@ const reducer = (state, action) => {
 
 const TransactionPage = () => {
   const navigate = useNavigate();
+  const { userId } = useAuth();
   const [state, dispatch] = useReducer(reducer, initialState);
   // const [isIncomeCardPressed, setIsIncomeCardPressed] = useState(false);
   // const { transactionItems } = state;
@@ -33,7 +35,7 @@ const TransactionPage = () => {
   const [filteredItems, setFilteredItems] = useState([]);
 
   useEffect(() => {
-    const loadTransactions = getTransactions();
+    const loadTransactions = getTransactions(userId);
     const loadCategories = getCategories();
     loadCategories.then(categoriesData => {
       setCategories(categoriesData);
@@ -41,7 +43,7 @@ const TransactionPage = () => {
     loadTransactions.then(transactionItems => {
       dispatch({ type: "Transactions_Loaded", payload: transactionItems });
     });
-  }, []);
+  }, [userId]);
 
   useEffect(
     () => {
@@ -153,8 +155,8 @@ const TransactionPage = () => {
             </Tag>
             <Tag
               className={`w-full h-8 ${selectedTag === "Expense"
-                ? "bg-expenseBC"
-                : "bg-gray-400"} hover:bg-expenseHover hover:text-[white] focus:bg-focusColor text-[1rem] text-center m-1 p-1 shadow cursor-pointer`}
+                ? "bg-expenseBC text-white"
+                : "bg-gray-400"} hover:bg-expenseHover hover:text-white focus:bg-focusColor text-[1rem] text-center m-1 p-1 shadow cursor-pointer`}
               onClick={() => handleTagClick("Expense")}
             >
               Expense

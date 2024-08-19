@@ -88,11 +88,11 @@ export const ResetPasswordPage = () => {
           <h1 className="font-bold text-3xl text-expenseBC">Reset Password</h1>
         </div>
         <form onSubmit={handleResetPassword}>
-          <div className="relative my-5">
+          <div className="relative mt-5 mb-8 ">
             <input
               type="password"
               value={password}
-              className={`peer m-0 block h-[58px] w-full rounded border-[1px] focus:shadow-md focus:shadow-incomeBC border-solid border-golden focus:border-expenseBC bg-transparent bg-clip-padding px-3 py-4 text-base font-normal leading-tight text-neutral-700 transition duration-200 ease-linear placeholder:text-transparent focus:pb-[0.625rem] focus:pt-[1.625rem] focus:text-neutral-700 focus:outline-none peer-focus:text-black
+              className={`peer m-0 block h-[58px] w-full rounded border-[1px] focus:shadow-md focus:shadow-incomeBC border-solid border-golden focus:border-expenseBC bg-transparent bg-clip-padding px-3 py-4 text-base font-normal leading-tight text-neutral-700 transition duration-200 ease-linear placeholder:text-transparent focus:pb-[0.625rem] focus:pt-[1.625rem] focus:text-neutral-700 focus:outline-none peer-focus:text-black [&:not(:placeholder-shown)]:pb-[0.625rem] [&:not(:placeholder-shown)]:pt-[1.625rem]
                 ${errors.password ? "border-error" : ""}   `}
               id="newPassword"
               name="newPassword"
@@ -102,7 +102,7 @@ export const ResetPasswordPage = () => {
             />
             <label
               htmlFor="newPassword"
-              className="pointer-events-none absolute left-0 top-0 origin-[0_0] border border-solid border-transparent px-3 py-4 text-neutral-500 transition-[opacity,_transform] duration-200 ease-linear peer-focus:-translate-y-2 peer-focus:translate-x-[0.15rem] peer-focus:scale-[0.85] peer-focus:text-black"
+              className="pointer-events-none absolute left-0 top-0 origin-[0_0] border border-solid border-transparent px-3 py-4 text-neutral-500 transition-[opacity,_transform] duration-200 ease-linear peer-focus:-translate-y-2 peer-focus:translate-x-[0.15rem] peer-focus:scale-[0.85] peer-focus:text-black peer-[:not(:placeholder-shown)]:-translate-y-2 peer-[:not(:placeholder-shown)]:translate-x-[0.15rem] peer-[:not(:placeholder-shown)]:scale-[0.85] motion-reduce:transition-none "
             >
               New Password
             </label>
@@ -111,11 +111,11 @@ export const ResetPasswordPage = () => {
                 {errors.password}
               </div>}
           </div>
-          <div className="relative my-5">
+          <div className="relative mt-5 mb-8">
             <input
               type="password"
               value={confirmPassword}
-              className={`peer m-0 block h-[58px] w-full rounded border-[1px] focus:shadow-md focus:shadow-incomeBC border-solid border-golden focus:border-expenseBC bg-transparent bg-clip-padding px-3 py-4 text-base font-normal leading-tight text-neutral-700 transition duration-200 ease-linear placeholder:text-transparent focus:pb-[0.625rem] focus:pt-[1.625rem] focus:text-neutral-700 focus:outline-none peer-focus:text-black
+              className={`peer m-0 block h-[58px] w-full rounded border-[1px] focus:shadow-md focus:shadow-incomeBC border-solid border-golden focus:border-expenseBC bg-transparent bg-clip-padding px-3 py-4 text-base font-normal leading-tight text-neutral-700 transition duration-200 ease-linear placeholder:text-transparent focus:pb-[0.625rem] focus:pt-[1.625rem] focus:text-neutral-700 focus:outline-none peer-focus:text-black [&:not(:placeholder-shown)]:pb-[0.625rem] [&:not(:placeholder-shown)]:pt-[1.625rem]
                   ${errors.confirmPassword ? "border-error" : ""}   `}
               id="confirmPassword"
               name="confirmPassword"
@@ -125,7 +125,7 @@ export const ResetPasswordPage = () => {
             />
             <label
               htmlFor="confirmPassword"
-              className="pointer-events-none absolute left-0 top-0 origin-[0_0] border border-solid border-transparent px-3 py-4 text-neutral-500 transition-[opacity,_transform] duration-200 ease-linear peer-focus:-translate-y-2 peer-focus:translate-x-[0.15rem] peer-focus:scale-[0.85] peer-focus:text-black"
+              className="pointer-events-none absolute left-0 top-0 origin-[0_0] border border-solid border-transparent px-3 py-4 text-neutral-500 transition-[opacity,_transform] duration-200 ease-linear peer-focus:-translate-y-2 peer-focus:translate-x-[0.15rem] peer-focus:scale-[0.85] peer-focus:text-black peer-[:not(:placeholder-shown)]:-translate-y-2 peer-[:not(:placeholder-shown)]:translate-x-[0.15rem] peer-[:not(:placeholder-shown)]:scale-[0.85] motion-reduce:transition-none"
             >
               Confirm Password
             </label>

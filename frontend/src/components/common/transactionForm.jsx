@@ -6,6 +6,7 @@ import {
   updateTransaction
 } from "../../Services/transactionService";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "../../hooks/useAuth";
 
 // const initialState = { transactionItems: [] };
 // const reducer = (state, action) => {
@@ -25,12 +26,14 @@ const TransactionForm = ({ selection }) => {
   const location = useLocation();
   // const [state,dispatch] = useReducer(reducer, initialState);
   const navigate = useNavigate();
+  const { userId } = useAuth();
   const { type } = location.state || { type: "" };
   const { Selection } = location.state || { Selection: "" };
   const [categories, setCategories] = useState({ income: [], expense: [] });
 
   const [formData, setFormData] = useState({
     transactionId: "",
+    user:userId,
     name: "",
     date: "",
     category: "",
@@ -53,6 +56,7 @@ const TransactionForm = ({ selection }) => {
       if (Selection) {
         setFormData({
           transactionId: Selection.transactionId || "",
+          user: Selection.user || userId,
           type: Selection.type || "",
           name: Selection.name || "",
           date: Selection.date || "",
@@ -75,7 +79,7 @@ const TransactionForm = ({ selection }) => {
       //   payload: selection,
       // });
     },
-    [Selection, type]
+    [Selection, type, userId]
   );
 
   // useEffect(() => {
@@ -118,7 +122,6 @@ const TransactionForm = ({ selection }) => {
         // }else{
         //   window.location.reload();
         // }
-        navigate(-1);
         message.success("Transaction is added!");
         setFormData({
           name: "",
@@ -129,8 +132,9 @@ const TransactionForm = ({ selection }) => {
           type: ""
         });
         setTimeout(() => {
-          window.location.reload();
-        }, 1000);
+          //window.location.reload();
+        }, 2000);
+        navigate(-1);
       } catch (error) {
         console.error("Error submitting form:", error);
         message.error("Failed to add transaction!");

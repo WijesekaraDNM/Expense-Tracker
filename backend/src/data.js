@@ -1,12 +1,12 @@
 export const sample_user = [
     {
-        userId: 1,
+        //userId: 1,
         userName: 'masha',
         email: 'masha@gmail.com',
         password: 'mash123'
     },
     {
-        userId: 2,
+        //userId: 2,
         userName: 'user',
         email: 'user@gmail.com',
         password: 'user123'
@@ -16,6 +16,7 @@ export const sample_user = [
 export const sample_transactions = [
     {
         transactionId:1,
+        user: '001',
         name: 'Salary',
         type: 'Income',
         category: 'Salary',
@@ -25,6 +26,7 @@ export const sample_transactions = [
     },
     {
         transactionId:2,
+        user:'002',
         name: 'Grocery',
         type: 'Expense',
         category: 'Groceries',

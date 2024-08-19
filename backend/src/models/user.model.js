@@ -7,7 +7,8 @@ export const UserSchema = new Schema(
         email : {type:String, required:true},
         password : {type: String, required:true},
         resetPasswordToken: { type: String }, // Field for the password reset token
-        resetPasswordExpires: { type: Date } 
+        resetPasswordExpires: { type: Date },
+        transactions: [{ type: Schema.Types.ObjectId, ref: 'Transaction' }]  
     },
 
     {

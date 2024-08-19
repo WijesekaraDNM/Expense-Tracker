@@ -117,7 +117,7 @@ const LoginPage = () => {
               <div className="text-error text-sm">{errors.password}</div>
             )}
             <p className="text-xs cursor-pointer hover:underline mt-2">
-              <Link to="/forgot-password" className="text-expenseBC hover:underline">
+              <Link to="/forgot-password" className="text-expenseBC hover:underline hover:font-semibold">
                 Forgot Password?
               </Link>
             </p>

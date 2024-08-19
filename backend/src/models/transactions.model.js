@@ -4,6 +4,7 @@ export const TransactionSchema = new Schema(
     {
         
         transactionId : {type: String, required: true},
+        user: { type: String, ref: 'User', required: true},
         type: {
             type: String,
             enum: ['Income', 'Expense'],
@@ -18,8 +19,8 @@ export const TransactionSchema = new Schema(
             validate: {
             validator: function (value) {
                 // Define your categories for income and expense
-                const incomeCategories = ['Salary', 'Investment', 'Gift'];
-                const expenseCategories = ['Rent', 'Groceries', 'Utilities'];
+                const incomeCategories = ['Salary/Wages','Business', 'Rental', 'Pension', 'Freelance/Side Hustle', 'Investments', 'Gift/Donations', 'Other'];
+                const expenseCategories = ['Housing & Utilities', 'Food & Groceries', 'Transportation', 'Health & Medical', 'Education', 'Entertainment & Leisure', 'Debt Repayments','Savings & Investments'];
                 
                 // Check if the category is valid for the given type
                 if (this.type === 'Income') {

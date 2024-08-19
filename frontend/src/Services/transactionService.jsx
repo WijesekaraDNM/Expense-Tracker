@@ -2,8 +2,8 @@ import axios from "axios";
 
 axios.defaults.baseURL = 'http://localhost:5000';
 
-export const getTransactions = async () => {
-    const {data} = await axios.post('/api/transactions/getAll');
+export const getTransactions = async (userId) => {
+    const {data} = await axios.post('/api/transactions/getAll/'+ userId);
     console.log("Added transactions in the database", data);
     return data;
 }
@@ -55,4 +55,27 @@ export const getCategories = async () => {
     const {data} = await axios.get('/api/transactions/categories');
     return data;
 }
+
+export const calculateTransactions = async (userId) => {
+    try {
+        const {data} = await axios.get('/api/transactions/totals/' + userId);
+        console.log("Calculations", data);
+        return data;
+    } catch (error) {
+        console.error("Error rendering calculations:", error.response ? error.response.data : error.message);
+        throw error;
+    }
+}
+
+export const calculateCategoricalAmounts = async (userId) => {
+    try {
+        const {data} = await axios.get('/api/transactions/categorical-amounts/' + userId);
+        console.log("Categorical Amounts:", data);
+        return data;
+    } catch (error) {
+        console.error("Error rendering calculations:", error.response ? error.response.data : error.message);
+        throw error;
+    }
+}
+
 

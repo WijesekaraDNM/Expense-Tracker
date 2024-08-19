@@ -9,15 +9,16 @@ const router = Router();
 
 router.post('/addTransaction', handler(async (req, res) => {
 
-    const {name, type, date, category, amount, note} = req.body;
+    const {name, type, date, category, amount, note, user} = req.body;
         // Validate required fields
-    if ( !name || !type || !date || !category || !amount ) {
+    if ( !name || !type || !date || !category || !amount || !user ) {
         return res.status(BAD_REQUEST).send("Missing required fields");
     }
     const newID = await generateTransactionID(type); 
     
     const newTransaction = {
         transactionId: newID,
+        user: user,
         name,
         type,
         date,
@@ -60,9 +61,12 @@ router.patch('/updateTransaction/:transactionId', handler(async (req, res) => {
 
 }));
 
-router.post('/getAll', handler( async(req,res) => {
+router.post('/getAll/:userId', handler( async(req,res) => {
+    const { userId } = req.params;
+    console.log("UserId:", userId);
     try{
-        const result = await TransactionModel.find({});
+        const result = await TransactionModel.find({ user: userId });
+        console.log("Result:", result);
         res.send(result);
     } catch(error){
         res.status(BAD_REQUEST).send("Transactions fetch error");
@@ -72,6 +76,28 @@ router.post('/getAll', handler( async(req,res) => {
 router.get('/categories', handler( async(req,res) => {
     res.json(CATEGORIES);
     
+}));
+
+router.get('/totals/:userId', handler(async (req, res) => {
+    const { userId } = req.params;
+    try {
+        const totals = await calculateIncomeAndExpense(userId);
+        res.json(totals);
+    } catch (error) {
+        console.error('Error calculating income and expense:', error);
+        res.status(INTERNAL_SERVER_ERROR).json({ error: 'Error calculating income and expense' });
+    }
+}));
+
+router.get('/categorical-amounts/:userId', handler(async (req, res) => {
+    const { userId } = req.params;
+    try {
+        const totals = await calculateCategoryWiseAmounts(userId);
+        res.json(totals);
+    } catch (error) {
+        console.error('Error calculating income and expense:', error);
+        res.status(INTERNAL_SERVER_ERROR).json({ error: 'Error calculating income and expense' });
+    }
 }));
 
 router.delete('/deleteTransaction/:transactionId',handler(async(req,res) => {
@@ -106,5 +132,70 @@ const generateTransactionID = async (type) =>{
         console.log("transaction id generate failed!");
     }
 }
+
+export const calculateIncomeAndExpense = async (userId) => {
+    const transactions = await TransactionModel.find({ user: userId });
+
+    let totalIncome = 0;
+    let totalExpense = 0;
+    let numberOfTransactions = transactions.length;
+    let numberOfIncome = 0;
+    let numberOfExpense = 0;
+    
+    transactions.forEach(transaction => {
+        if (transaction.type === 'Income') {
+            totalIncome += transaction.amount;
+            numberOfIncome++;
+        } else if (transaction.type === 'Expense') {
+            totalExpense += transaction.amount;
+            numberOfExpense++;
+        }
+    });
+
+    const rest = totalIncome - totalExpense;
+
+    return {
+        totalIncome,
+        totalExpense,
+        rest,
+        numberOfTransactions,
+        numberOfExpense,
+        numberOfIncome
+    };
+}
+
+
+export const calculateCategoryWiseAmounts = async (userId) => {
+    const transactions = await TransactionModel.find({ user: userId });
+
+    const categoryWiseIncome = CATEGORIES.income.map(category => ({
+        category,
+        amount: 0
+    }));
+
+    const categoryWiseExpense = CATEGORIES.expense.map(category => ({
+        category,
+        amount: 0
+    }));
+
+    // Iterate over transactions to calculate totals
+    transactions.forEach(transaction => {
+        const { type, amount, category } = transaction;
+
+        if (type === 'Income') {
+            const incomeCategory = categoryWiseIncome.find(item => item.category === category);
+            if (incomeCategory) incomeCategory.amount += amount;
+        } else if (type === 'Expense') {
+            const expenseCategory = categoryWiseExpense.find(item => item.category === category);
+            if (expenseCategory) expenseCategory.amount += amount;
+        }
+    });
+
+    return {
+        income: categoryWiseIncome,
+        expense: categoryWiseExpense
+    };
+};
+
 
 export default router;
