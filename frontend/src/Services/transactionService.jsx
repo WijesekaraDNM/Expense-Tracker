@@ -78,4 +78,14 @@ export const calculateCategoricalAmounts = async (userId) => {
     }
 }
 
+export const dailyForcastOfIncomeExpense = async (userId) => {
+    try {
+        const {data} = await axios.get('/api/transactions/totals/daily/' + userId);
+        console.log("Daily Income Expense Amounts:", data);
+        return data;
+    } catch (error) {
+        console.error("Error rendering calculations:", error.response ? error.response.data : error.message);
+        throw error;
+    }
+}
 

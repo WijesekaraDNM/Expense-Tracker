@@ -104,16 +104,16 @@ const TransactionPage = () => {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 p-2 gap-3 ">
       <div className="lg:col-span-1 h-full ">
-        <div className=" border-[5px] border-golden rounded-lg gap-3 runded-xl">
+        <div className=" border-[5px] border-grad bg-white rounded-lg gap-3 runded-xl">
           <div className="flex flex-col p-10 m-10 gap-3 ">
             <div
-              className="flex w-full h-40 justify-center items-center shadow-lg rounded-lg text-[2rem] opacity-100 text-center bg-incomeBC hover:bg-incomeHover focus:bg-focusColor"
+              className="flex w-full h-40 justify-center cursor-pointer items-center shadow-lg rounded-lg text-[2rem] opacity-100 text-center bg-incomeBC hover:bg-incomeHover focus:bg-focusColor"
               onClick={e => handleIncomeCard()}
             >
               Income
             </div>
             <div
-              className=" flex w-full h-40 shadow-lg rounded-lg text-[2rem] text-white opacity-100 text-center justify-center items-center bg-expenseBC hover:bg-expenseHover"
+              className=" flex w-full h-40 shadow-lg cursor-pointer rounded-lg text-[2rem] text-white opacity-100 text-center justify-center items-center bg-expenseBC hover:bg-expenseHover"
               onClick={e => handleExpenseCard()}
             >
               Expense
@@ -121,12 +121,12 @@ const TransactionPage = () => {
           </div>
         </div>
       </div>
-      <div className="  lg:col-span-2 bg-blurBC">
-        <div className=" w-full h-full backdrop:blur-3xl rounded-lg border-[1px] border-golden ">
+      <div className="  lg:col-span-2  rounded-lg">
+        <div className=" w-full h-full bg-blurBC backdrop:blur-3xl rounded-lg border-[1px] border-golden ">
           <div className="md:flex hidden flex-row justify-center items-center my-6 mx-10 text-black font-semibold">
             <Tag
               className={`w-full h-8 ${selectedTag === "All"
-                ? "bg-gradient-to-r from-incomeHover to-expenseHover"
+                ? "bg-gradient-to-r from-incomeHover to-expenseHover text-white"
                 : "bg-gray-400"} hover:bg-goldenHover text-[1rem] text-center m-1 p-1 shadow-md cursor-pointer`}
               onClick={() => handleTagClick("All")}
             >
@@ -134,7 +134,7 @@ const TransactionPage = () => {
             </Tag>
             <Tag
               className={`w-full h-8 ${selectedTag === "Income"
-                ? "bg-incomeBC"
+                ? "bg-incomeBC text-white"
                 : "bg-gray-400"} hover:bg-incomeHover focus:bg-focusColor text-[1rem] text-center m-1 p-1 shadow-md cursor-pointer`}
               onClick={() => handleTagClick("Income")}
             >

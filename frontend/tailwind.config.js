@@ -17,7 +17,7 @@ export default {
         //incomeBC:'#98E0AC',
         //expenseBC: '#C4896F',
         expenseBC: '#334050',
-        expenseHover: '#4D6178',
+        expenseHover: '#28323e',
         expenseAmount: '#CC0909',
         blurBC: '#E0FFEF',
         //expenseHover: '#da997d',

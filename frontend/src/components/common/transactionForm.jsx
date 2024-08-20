@@ -122,7 +122,6 @@ const TransactionForm = ({ selection }) => {
         // }else{
         //   window.location.reload();
         // }
-        message.success("Transaction is added!");
         setFormData({
           name: "",
           date: "",
@@ -131,10 +130,13 @@ const TransactionForm = ({ selection }) => {
           note: "",
           type: ""
         });
+        message.success("Transaction is added!");
         setTimeout(() => {
+          navigate(-1);
           //window.location.reload();
-        }, 2000);
-        navigate(-1);
+        }, 1000);
+        
+        
       } catch (error) {
         console.error("Error submitting form:", error);
         message.error("Failed to add transaction!");
