@@ -114,7 +114,7 @@ const TransactionForm = ({ Selection, type, onClose, onAddEdit }) => {
         console.log("Form submitted succedded: ", response.data);
         message.success("Transaction is added!");
 
-        setIstransactionAddEdit(!istransactionAddEdit);    
+        setIstransactionAddEdit(!`istransactionAddEdit`);    
         setTimeout(() => {
           //window.location.reload();
           setFormData({
