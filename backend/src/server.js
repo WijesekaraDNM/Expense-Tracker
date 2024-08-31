@@ -2,6 +2,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 import express from "express";
 import cors from 'cors';
+import calculationsRouter from './routers/calculations.router.js';
 import userRouter from './routers/users.router.js';
 import transactionsRouter from './routers/transaction.router.js'
 import {dbconnect} from './config/database.config.js';
@@ -20,6 +21,7 @@ app.use(cors({
 
 app.use('/api/users',userRouter);
 app.use('/api/transactions', transactionsRouter);
+app.use('/api/calculations', calculationsRouter);
 // app.use('/api/expense', expenseRoutere);
 // app.use('/api/income', incomeRouter);
 

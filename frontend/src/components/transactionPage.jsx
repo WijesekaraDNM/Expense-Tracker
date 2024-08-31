@@ -1,10 +1,11 @@
-import React, { useEffect, useState, useReducer } from "react";
+import React, { useEffect, useState, useReducer, useRef } from "react";
 import { Tag, Select } from "antd";
 import  ExpenseCard  from "./common/ExpenseCard";
 import { useNavigate } from "react-router-dom";
 import { FaXmark, FaBars } from "react-icons/fa6";
 import { getCategories, getTransactions } from "../Services/transactionService";
 import { useAuth } from "../hooks/useAuth";
+import TransactionForm from "./common/transactionForm";
 
 const { Option } = Select;
 
@@ -15,12 +16,17 @@ const reducer = (state, action) => {
       return { ...state, transactionItems: action.payload };
     case "Filter_Transactions":
       return { ...state, transactionItems: action.payload };
+    case "Transaction_Deleted":
+      return {
+        ...state,
+        transactionItems: state.transactionItems.filter(item => item.transactionId !== action.payload),
+      };
     default:
       return state;
   }
 };
 
-const TransactionPage = () => {
+const TransactionPage = ({ startingDate, endingDate, databaseUpdate }) => {
   const navigate = useNavigate();
   const { userId } = useAuth();
   const [state, dispatch] = useReducer(reducer, initialState);
@@ -30,20 +36,75 @@ const TransactionPage = () => {
   // const [isPopupMenuOpened, setIsPopupMenuOpened] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [categories, setCategories] = useState({ income: [], expense: [] });
+  const [incomeCategories, setIncomeCategories] = useState([]);
+  const [expenseCategories, setExpenseCategories] = useState([]);
   const [selectedTag, setSelectedTag] = useState("All");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [filteredItems, setFilteredItems] = useState([]);
+  const [isPopupWindowOpened,setIsPopupWindowOpened]= useState(false);
+  const [isDatabaseUpdated,setIsDatabaseUpdated] = useState(false);
+  const [popupType, setPopupType] = useState("");
+  const [popupSelection, setPopupSelection] = useState();
+  const leftElementRef = useRef(null);
+  const rightElementRef = useRef(null);
+  const hasAnimatedRef = useRef(false);
 
   useEffect(() => {
-    const loadTransactions = getTransactions(userId);
-    const loadCategories = getCategories();
+    const loadTransactions = getTransactions(userId, { startingDate, endingDate});
+    console.log("starting Date(tpage):", startingDate);
+    const loadCategories = getCategories(userId);
     loadCategories.then(categoriesData => {
-      setCategories(categoriesData);
+      //setCategories(categoriesData);
+      setIncomeCategories(categoriesData.income);
+      setExpenseCategories(categoriesData.expense);
     });
     loadTransactions.then(transactionItems => {
       dispatch({ type: "Transactions_Loaded", payload: transactionItems });
     });
-  }, [userId]);
+
+  }, [userId, startingDate, endingDate]);
+
+  useEffect(() => {
+    const observerOptions = {
+      root: null, // Uses the viewport as the root
+      threshold: 0.1, // Trigger the callback when 10% of the element is visible
+    };
+  
+    const observerCallback = (entries, observer) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting && !entry.target.classList.contains('has-animated')) {
+          if (entry.target.classList.contains('left')) {
+            entry.target.classList.add('animate-left', 'has-animated');
+          } else if (entry.target.classList.contains('right')) {
+            entry.target.classList.add('animate-right', 'has-animated');
+          }
+          observer.unobserve(entry.target); // Stop observing the element after the animation is triggered
+        }
+      });
+    };
+  
+    const observer = new IntersectionObserver(observerCallback, observerOptions);
+  
+    if (leftElementRef.current) observer.observe(leftElementRef.current);
+    if (rightElementRef.current) observer.observe(rightElementRef.current);
+  
+    return () => {
+      if (leftElementRef.current) observer.unobserve(leftElementRef.current);
+      if (rightElementRef.current) observer.unobserve(rightElementRef.current);
+    };
+  }, []);
+
+  // useEffect(() => {
+  //   if (isDatabaseUpdated) {
+  //     if (databaseUpdate) {
+  //       databaseUpdate();
+  //     }
+  //     // Reset istransactionAddEdit after operation
+  //     setIsDatabaseUpdated(false);
+  //   }
+  //   console.log("transactionPage added1:", isDatabaseUpdated);
+    
+  // }, [isDatabaseUpdated, databaseUpdate]);
 
   useEffect(
     () => {
@@ -68,12 +129,24 @@ const TransactionPage = () => {
     [state.transactionItems, selectedTag, selectedCategory]
   );
 
+  useEffect(() => {
+    if (isDatabaseUpdated) {
+      if(databaseUpdate){
+        databaseUpdate();
+      }
+    }
+    console.log("transactionPage added1:", isDatabaseUpdated);
+    setIsDatabaseUpdated(false);
+  }, [isDatabaseUpdated,databaseUpdate]);
+
   const handleTagClick = tag => {
     setSelectedTag(tag);
   };
 
   const handleIncomeCategoryChange = value => {
+    console.log("refunds:", value);
     setSelectedCategory(value);
+
   };
 
   const handleExpenseCategoryChange = value => {
@@ -81,11 +154,19 @@ const TransactionPage = () => {
   };
 
   const handleIncomeCard = () => {
-    navigate("/Form", { state: { type: "Income" } });
+    setIsPopupWindowOpened(true);
+    setPopupType("Income");
+    //navigate("/Form", { state: { type: "Income" } });
   };
 
   const handleExpenseCard = () => {
-    navigate("/Form", { state: { type: "Expense" } });
+    setIsPopupWindowOpened(true);
+    setPopupType("Expense");
+    //navigate("/Form", { state: { type: "Expense" } });
+  };
+
+  const closePopupWindow = () => {
+    setIsPopupWindowOpened(false);
   };
 
   const handleTag = tag => {
@@ -94,26 +175,35 @@ const TransactionPage = () => {
   const toggleButton = () => {
     setIsMenuOpen(!isMenuOpen);
   };
-
-  // const closePopup = () => {
-  //   setIsPopupMenuOpened(false);
-  //   setIsIncomeCardPressed(false);
-  //   setIsExpenseCardPressed(false);
-  // };
+  const handleTransactionDelete = (transactionId) => {
+    setIsDatabaseUpdated(!isDatabaseUpdated);
+    console.log("transactionDelete:transactionpage: ", isDatabaseUpdated);
+    dispatch({ type: "Transaction_Deleted", payload: transactionId });
+  };
+  const handleTransactionAddEdit = async () => {
+    setIsDatabaseUpdated(!isDatabaseUpdated);
+    console.log("transactionAdded:transactionpage: ", isDatabaseUpdated);
+    const updatedTransactions = await getTransactions(userId, { startingDate, endingDate });
+    dispatch({ type: "Transactions_Loaded", payload: updatedTransactions });
+  };
+  const handleUpdateSelection = (selection) => {
+    setPopupSelection(selection);
+    setIsPopupWindowOpened(true);
+  }
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 p-2 gap-3 ">
-      <div className="lg:col-span-1 h-full ">
-        <div className=" border-[5px] border-grad bg-white rounded-lg gap-3 runded-xl">
-          <div className="flex flex-col p-10 m-10 gap-3 ">
-            <div
-              className="flex w-full h-40 justify-center cursor-pointer items-center shadow-lg rounded-lg text-[2rem] opacity-100 text-center bg-incomeBC hover:bg-incomeHover focus:bg-focusColor"
+    <div className="grid rounded bg-gray-300 py-10 px-3 m-3 mt-20 mb-20 grid-cols-1 lg:grid-cols-3 gap-3 ">
+      <div className="flex items-center lg:col-span-1 h-full ">
+        <div className=" w-full rounded-lg gap-3 runded-xl">
+          <div className="flex flex-col p-10 gap-3 ">
+            <div  ref={leftElementRef}
+              className="flex left w-full h-40 justify-center cursor-pointer items-center rounded-lg text-[2rem] opacity-100 text-center hover:bg-incomeHover focus:bg-focusColor focus:test-gray-500 shadow-[0_4px_9px_-4px_#9e9e9e] hover:shadow-[0_8px_9px_-4px_#9e9e9e,0_4px_18px_0_#7e7d7d] focus:shadow-[0_8px_9px_-4px_#9e9e9e,0_4px_18px_0_#7e7d7d] focus:outline-none focus:ring-0 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] transition duration-150 ease-in-out "
               onClick={e => handleIncomeCard()}
             >
               Income
             </div>
-            <div
-              className=" flex w-full h-40 shadow-lg cursor-pointer rounded-lg text-[2rem] text-white opacity-100 text-center justify-center items-center bg-expenseBC hover:bg-expenseHover"
+            <div ref={rightElementRef}
+              className=" flex right w-full h-40 cursor-pointer rounded-lg text-[2rem] text-white opacity-100 text-center justify-center items-center hover:bg-expenseHover focus:test-gray-500 focus:bg-gray-transparent shadow-[0_4px_9px_-4px_#9e9e9e] hover:shadow-[0_8px_9px_-4px_#9e9e9e,0_4px_18px_0_#7e7d7d] focus:shadow-[0_8px_9px_-4px_#9e9e9e,0_4px_18px_0_#7e7d7d] focus:outline-none focus:ring-0 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] transition duration-150 ease-in-out "
               onClick={e => handleExpenseCard()}
             >
               Expense
@@ -122,7 +212,7 @@ const TransactionPage = () => {
         </div>
       </div>
       <div className="  lg:col-span-2  rounded-lg">
-        <div className=" w-full h-full bg-blurBC backdrop:blur-3xl rounded-lg border-[1px] border-golden ">
+        <div className=" w-full h-full bg-blurBC backdrop:blur-3xl rounded-lg border-[1px] border-incomeBC ">
           <div className="md:flex hidden flex-row justify-center items-center my-6 mx-10 text-black font-semibold">
             <Tag
               className={`w-full h-8 ${selectedTag === "All"
@@ -132,6 +222,7 @@ const TransactionPage = () => {
             >
               All
             </Tag>
+            
             <Tag
               className={`w-full h-8 ${selectedTag === "Income"
                 ? "bg-incomeBC text-white"
@@ -146,7 +237,7 @@ const TransactionPage = () => {
                   onChange={handleIncomeCategoryChange}
                 >
                   <Option value="All">All Incomes</Option>
-                  {categories.income.map((category, index) =>
+                  {incomeCategories.map((category, index) =>
                     <Option key={index} value={category}>
                       {category}
                     </Option>
@@ -167,7 +258,7 @@ const TransactionPage = () => {
                   onChange={handleExpenseCategoryChange}
                 >
                   <Option value="All">All Expenses</Option>
-                  {categories.expense.map((category, index) =>
+                  {expenseCategories.map((category, index) =>
                     <Option key={index} value={category}>
                       {category}
                     </Option>
@@ -210,7 +301,7 @@ const TransactionPage = () => {
                       onChange={handleIncomeCategoryChange}
                     >
                       <Option className="!text-[12px] hover:bg-goldenHover hover:shadow-golden " value="All">All Incomes</Option>
-                      {categories.income.map((category, index) =>
+                      {incomeCategories.map((category, index) =>
                         <Option className="!text-[12px] bg-golden hover:bg-goldenHover hover:shadow-golden" key={index} value={category}>
                           {category}
                         </Option>
@@ -229,7 +320,7 @@ const TransactionPage = () => {
                       onChange={handleExpenseCategoryChange}
                     >
                       <Option className="!text-[12px]" value="All">All Expenses</Option>
-                      {categories.expense.map((category, index) =>
+                      {expenseCategories.map((category, index) =>
                         <Option className="!text-[12px]" key={index} value={category}>
                           {category}
                         </Option>
@@ -239,10 +330,10 @@ const TransactionPage = () => {
               </li>
             </ul>
           </div>
-          <div className="backdrop-blur-md bg-white/90 p-2 m-3 border-[2px] rounded border-golden">
-            <div className="max-h-[500px] overflow-auto py-1.3 ">
-              <table className=" w-[100%] ">
-                <thead className="flex w-full sm:no relative text-[0.7rem] md:text-[1rem] text-[black] bg-goldenHover">
+          <div className="backdrop-blur-md bg-white/90 p-2 m-3 border-[2px] rounded border-golden overflow-x-auto">
+            <div className=" py-1.3 ">
+              <table className=" table-auto w-full h-[400px]">
+                <thead className=" w-full sm:no z-50 text-[0.8rem] md:text-[1rem] text-[black] font-semibold bg-goldenHover">
                   <tr key="index" className="flex w-full ">
                     <th className="flex w-[40%] border-[1px] pl-3 border-gray-500 justify-start items-center ">
                       About Income
@@ -259,8 +350,8 @@ const TransactionPage = () => {
                     <th className="flex  w-[15%] justify-start items-center pl-3 border-[1px] border-gray-500" />
                   </tr>
                 </thead>
-                <tbody className="flex justify-center items-center  shadow-md backdrop-blur-sm w-full text-white flex-wrap cursor-pointer">
-                  {filteredItems.map((element, index) =>
+                <tbody className="flex justify-center items-center max-h-[400px] shadow-md backdrop-blur-sm w-full text-white flex-wrap cursor-pointer">
+                  {/*{filteredItems.map((element, index) =>
                     <ExpenseCard
                       key={index}
                       selection={element}
@@ -272,13 +363,25 @@ const TransactionPage = () => {
                       // amount={element.amount}
                       // category={element.category}
                     />
-                  )}
+                  )} */}
+                  {filteredItems.map(item => (
+                  <ExpenseCard key={item.transactionId} selection={item} onDelete={handleTransactionDelete} onOpen={handleUpdateSelection} />
+                ))}
                 </tbody>
               </table>
             </div>
           </div>
         </div>
       </div>
+      {isPopupWindowOpened && (
+        <div className="fixed cursor-pointer z-50 top-0 left-0 w-full h-full flex justify-center items-center bg-black bg-opacity-80">
+          <div className=" h-[95%] rounded-lg shadow-lg w-2/5 relative">
+            <div className="relative flex">
+              <TransactionForm type={popupType} Selection={popupSelection} onClose={closePopupWindow} onAddEdit={handleTransactionAddEdit} />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

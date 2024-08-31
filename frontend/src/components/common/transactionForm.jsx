@@ -7,33 +7,28 @@ import {
 } from "../../Services/transactionService";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
+import { FaXmark } from "react-icons/fa6";
+import './../../index.css';
 
-// const initialState = { transactionItems: [] };
-// const reducer = (state, action) => {
-//   switch (action.type) {
-//     case "Transactions_Loaded":
-//       return { ...state, transactionItems: action.payload };
-//     case 'Transactions_Added':
-//       return {...state, transactionItems: [...state.transactionItems, action.payload]};
-//     case 'Transactions_Updated':
-//         return {...state, transactionItems:  action.payload};
-//     default:
-//       return state;
-//   }
-// };
 
-const TransactionForm = ({ selection }) => {
+const TransactionForm = ({ Selection, type, onClose, onAddEdit }) => {
   const location = useLocation();
   // const [state,dispatch] = useReducer(reducer, initialState);
   const navigate = useNavigate();
   const { userId } = useAuth();
-  const { type } = location.state || { type: "" };
-  const { Selection } = location.state || { Selection: "" };
-  const [categories, setCategories] = useState({ income: [], expense: [] });
+  // const { type } = location.state || { type: "" };
+  // const { Selection } = location.state || { Selection: "" };
+  const [incomeCategories, setIncomeCategories] = useState([]);
+  const [expenseCategories, setExpenseCategories] = useState([]);
+  const [categories, setCategories] = useState();
+  const [isPopupMenuOpened, setIsPopupMenuOpened] = useState(true);
+  const [istransactionAddEdit, setIstransactionAddEdit] = useState(false);
+  const [isIncomeCardPressed, setIsIncomeCardPressed] = useState(false);
+  const [isExpenseCardPressed, setIsExpenseCardPressed] = useState(false);
 
   const [formData, setFormData] = useState({
     transactionId: "",
-    user:userId,
+    user: userId,
     name: "",
     date: "",
     category: "",
@@ -45,11 +40,13 @@ const TransactionForm = ({ selection }) => {
   const backgroundColor =
     formData.type === "Income" ? "bg-incomeBC" : "bg-expenseBC";
   const backgroundColor2 =
-    formData.type === "Income" ? "bg-blurBC" : "bg-goldenHover";
+    formData.type === "Income" ? "bg-white" : "bg-white";
   const borderColor =
     formData.type === "Income" ? "border-incomeBC" : "border-expenseBC";
   const textColor =
     formData.type === "Income" ? "text-[black]" : "text-[white]";
+    const shadow =
+    formData.type === "Income" ? "focus:shadow-incomeBC" : "focus:shadow-expenseBC";
 
   useEffect(
     () => {
@@ -70,27 +67,29 @@ const TransactionForm = ({ selection }) => {
           type: type
         }));
       }
-      const loadCategories = getCategories();
+      console.log("userId in transactionForm:", userId);
+      const loadCategories = getCategories(userId);
       loadCategories.then(categoriesData => {
-        setCategories(categoriesData);
+        setIncomeCategories(categoriesData.income);
+        setExpenseCategories(categoriesData.expense);
+        console.log("category", categoriesData);
       });
-      // dispatch({
-      //   type: "Contacts_Loaded",
-      //   payload: selection,
-      // });
     },
     [Selection, type, userId]
   );
 
-  // useEffect(() => {
-  //   const loadAllTransactions = getTransactions();
-
-  //   loadAllTransactions.then(contactItems => {
-  //     dispatch({ type: 'Contacts_Loaded', payload: contactItems })
-  //   })
-  // },
-  //   [selectedDepartment]
-  // );
+  useEffect(
+    () => {
+      if (istransactionAddEdit) {
+        if (onAddEdit) {
+          onAddEdit();
+        }
+        // Reset istransactionAddEdit after operation
+        setIstransactionAddEdit(false);
+      }
+    },
+    [istransactionAddEdit, onAddEdit]
+  );
 
   const handleChange = e => {
     setFormData({
@@ -113,30 +112,23 @@ const TransactionForm = ({ selection }) => {
       try {
         const response = addTransaction({ ...formData });
         console.log("Form submitted succedded: ", response.data);
-
-        // if(type){
-        //   dispatch({
-        //     type: "Transactions_Added",
-        //     payload: response.data,
-        //   });
-        // }else{
-        //   window.location.reload();
-        // }
-        setFormData({
-          name: "",
-          date: "",
-          category: "",
-          amount: 0,
-          note: "",
-          type: ""
-        });
         message.success("Transaction is added!");
+
+        setIstransactionAddEdit(!istransactionAddEdit);    
         setTimeout(() => {
-          navigate(-1);
           //window.location.reload();
-        }, 1000);
-        
-        
+          setFormData({
+            name: "",
+            date: "",
+            category: "",
+            amount: 0,
+            note: "",
+            type: type || Selection.type
+          });
+          onClose();
+          // onTransactionComplete();
+        }, 5000);
+        //window.location.reload();
       } catch (error) {
         console.error("Error submitting form:", error);
         message.error("Failed to add transaction!");
@@ -156,6 +148,7 @@ const TransactionForm = ({ selection }) => {
     } else {
       try {
         updateTransaction(formData.transactionId, {
+          user: formData.user,
           name: formData.name,
           date: formData.date,
           category: formData.category,
@@ -164,22 +157,24 @@ const TransactionForm = ({ selection }) => {
           type: formData.type
         });
         console.log("Form update succeeded: ", formData.note);
-        // if(Selection){
-        //   dispatch({
-        //     type: "Transactions_Updated",
-        //     payload: response.data,
-        //   });
-        // }else{
-        //   window.location.reload();
-        // }
-        setFormData({
-          ...formData
-        });
+        // setFormData({
+        //   ...formData
+        // });
         message.success("Transaction is updated!");
+        setIstransactionAddEdit(!istransactionAddEdit);
         setTimeout(() => {
-          //window.location.reload();
-          navigate(-1);
-        }, 1000);
+          // onTransactionComplete();
+          setFormData({
+            name: "",
+            date: "",
+            category: "",
+            amount: 0,
+            note: "",
+            type: type || Selection.type
+          });
+          onClose();
+        }, 5000);
+        //window.location.reload();
       } catch (error) {
         console.error("Error updating form:", error);
         message.error("Failed to update the transaction!");
@@ -187,113 +182,149 @@ const TransactionForm = ({ selection }) => {
     }
   };
 
+  const closePopup = () => {
+    setIsPopupMenuOpened(false);
+    setIsIncomeCardPressed(false);
+    setIsExpenseCardPressed(false);
+  };
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center bg-[#ababab] justify-center">
-      <div className="flex w-[40%] backdrop:blur-3xl bg-white2/3 shadow-2xl rounded-2xl">
-        <button className="absolute top-2 right-2 text-gray-600 hover:text-gray-900">
-          &times;
-        </button>
-        <form
-          className={`${backgroundColor2} border-[3px] w-full border-golden shadow-lg rounded-2xl m-5 text-gray-900 font-semibold text-base`}
+    <div className="fixed inset-0 z-50 flex items-center bg-transparent justify-center">
+      <div className="flex w-[90%] md:w-[60%] rounded-2xl">
+        <button
+          onClick={onClose}
+          className="absolute w-10 h-10 top-2 right-2 text-blurBC hover:text-white"
         >
+          <FaXmark />
+        </button>
+
+        <form className={`${backgroundColor2} grid lg:grid-cols-2 grid-cols-1 border-[3px] w-full border-golden shadow-lg rounded-lg m-5 text-gray-900 font-semibold text-base`}
+        >
+          <div className={`${backgroundColor} h-full hidden rounded-l lg:flex flex-col gap-2 justify-center items-center p-10`}>
+            <img src="./incomeBC.png" alt=""/>
+            <p className={` font-sans text-sm ${textColor}`}>Add the detailed information of your transaction...</p>
+          </div>
           <div className="flex flex-col p-5">
-            <div className=" flex w-full h-72 shadow-md justify-end rounded-t-[20px] opacity-100 items-end bg-credit-card bg-cover bg-center">
+            <div className=" flex w-full shadow-md justify-between rounded-t-[20px] opacity-100 items-end= ">
               <h1
                 className={`flex shadow-md ${backgroundColor} ${textColor} justify-between font-bold px-5 py-3 w-full`}
               >
-                <span className="text-2xl bg-transparent md:text-2xl w-full ">
-                  Enter Your {formData.type}
+                <span className="lg:text-lg bg-transparent text-md w-full ">
+                  Enter {formData.type}
                 </span>
                 <button
-                  className=" py-1  px-5 border-[2px] border-white shadow-sm hover:shadow-white hover:shadow-md rounded"
+                  className="flex text-sm lg:text-md  border-[2px] p-2 h-8 text-center border-white shadow-sm items-center hover:shadow-white hover:shadow-md rounded"
                   onClick={Selection ? handleEdit : handleSubmit}
                 >
                   {Selection ? "Update" : "Insert"}
                 </button>
               </h1>
             </div>
-            <div className="flex flex-col gap-2 m-2 mt-5">
-              <div className="flex relative flex-row items-center justify-start px-3">
-                <label htmlFor="name" className="block mx-1 my-2 w-[30%] ">
-                  Transaction Name
-                </label>
+            <div className="flex flex-col text-sm lg:text-md gap-2 m-2 mt-5">
+              <div className="relative my-1">
                 <input
                   type="text"
                   id="name"
                   name="name"
                   value={formData.name}
                   onChange={handleChange}
-                  className={`block p-2 mx-3 w-[60%] h-10 text-gray-600 bg-gray-100 focus:bg-white focus:border-[#C4896F] hover:bg-white text-sm rounded-lg border-b-4 ${borderColor} border-[1px]`}
+                  placeholder={"Name of the transaction"}
+                  className={`peer m-0 block h-[58px] border-[1px] focus:shadow-md ${shadow} border-solid border-golden w-full rounded bg-transparent bg-clip-padding px-3 py-4 text-base font-normal leading-tight text-neutral-700 transition duration-200 ease-linear placeholder:text-transparent focus:border-expenseBC focus:pb-[0.625rem] focus:pt-[1.625rem] focus:text-neutral-700 focus:outline-none peer-focus:text-black [&:not(:placeholder-shown)]:pb-[0.625rem] [&:not(:placeholder-shown)]:pt-[1.625rem]
                 />
-              </div>
-              <div className="flex relative flex-row items-center justify-start px-3">
-                <label htmlFor="date" className="block mx-1 w-[30%] my-2 ">
-                  Date
+                `}
+                />
+                <label
+                  htmlFor="name"
+                  className="pointer-events-none absolute left-0 top-0 origin-[0_0] border border-solid border-transparent px-3 py-4 text-neutral-500 transition-[opacity,_transform] duration-200 ease-linear peer-focus:-translate-y-2 peer-focus:translate-x-[0.15rem] peer-focus:scale-[0.85] peer-focus:text-black peer-[:not(:placeholder-shown)]:-translate-y-2 peer-[:not(:placeholder-shown)]:translate-x-[0.15rem] peer-[:not(:placeholder-shown)]:scale-[0.85] motion-reduce:transition-none "
+                >
+                  Transaction Name
                 </label>
+              </div>
+             
+              <div className="relative my-1">
                 <input
                   type="date"
                   id="date"
                   value={formData.date}
                   onChange={handleChange}
-                  className={`block p-2 w-[30%] mx-3 border-b-4 text-sm h-10 text-gray-600 bg-gray-100 focus:bg-white ${borderColor} hover:bg-white rounded-lg border-[1px]`}
+                  placeholder="Add the date"
+                  className={`peer m-0 block h-[58px] border-[1px] focus:shadow-md ${shadow} border-solid border-golden w-full rounded bg-transparent bg-clip-padding px-3 py-4 text-base font-normal leading-tight text-neutral-700 transition duration-200 ease-linear placeholder:text-transparent focus:border-expenseBC focus:pb-[0.625rem] focus:pt-[1.625rem] focus:text-neutral-700 focus:outline-none peer-focus:text-black [&:not(:placeholder-shown)]:pb-[0.625rem] [&:not(:placeholder-shown)]:pt-[1.625rem]
+                   `}
                 />
-              </div>
-              <div className="flex relative flex-row items-center justify-start px-3">
-                <label htmlFor="amount" className="block mx-1 w-[30%] my-2 ">
-                  Amount (Rs.)
+                <label
+                  htmlFor="date"
+                  className="pointer-events-none absolute left-0 top-0 origin-[0_0] border border-solid border-transparent px-3 py-4 text-neutral-500 transition-[opacity,_transform] duration-200 ease-linear peer-focus:-translate-y-2 peer-focus:translate-x-[0.15rem] peer-focus:scale-[0.85] peer-focus:text-black peer-[:not(:placeholder-shown)]:-translate-y-2 peer-[:not(:placeholder-shown)]:translate-x-[0.15rem] peer-[:not(:placeholder-shown)]:scale-[0.85] motion-reduce:transition-none "
+                >
+                  Date
                 </label>
+              </div>
+              <div className="relative my-1">
                 <input
                   type="number"
                   id="amount"
                   name="amount"
                   value={formData.amount}
                   onChange={handleChange}
-                  className={`block p-2 w-[40%] mx-3 border-b-4 h-10 text-sm text-gray-600 bg-gray-100 focus:bg-white hover:bg-white rounded-lg ${borderColor} border-[1px]`}
+                  placeholder="Amount of transaction"
+                  className={`peer m-0 block h-[58px] border-[1px] focus:shadow-md ${shadow} border-solid border-golden w-full rounded bg-transparent bg-clip-padding px-3 py-4 text-base font-normal leading-tight text-neutral-700 transition duration-200 ease-linear placeholder:text-transparent focus:border-expenseBC focus:pb-[0.625rem] focus:pt-[1.625rem] focus:text-neutral-700 focus:outline-none peer-focus:text-black [&:not(:placeholder-shown)]:pb-[0.625rem] [&:not(:placeholder-shown)]:pt-[1.625rem]
+                  `}
                 />
-              </div>
-              <div className="flex relative flex-row items-center justify-start px-3">
-                <label htmlFor="category" className="block mx-1 my-2 w-[30%]">
-                  Category
+                <label
+                  htmlFor="amount"
+                  className="pointer-events-none absolute left-0 top-0 origin-[0_0] border border-solid border-transparent px-3 py-4 text-neutral-500 transition-[opacity,_transform] duration-200 ease-linear peer-focus:-translate-y-2 peer-focus:translate-x-[0.15rem] peer-focus:scale-[0.85] peer-focus:text-black peer-[:not(:placeholder-shown)]:-translate-y-2 peer-[:not(:placeholder-shown)]:translate-x-[0.15rem] peer-[:not(:placeholder-shown)]:scale-[0.85] motion-reduce:transition-none "
+                >
+                  Amount (Rs.)
                 </label>
-                <select
+              </div>
+
+              <div className="relative my-1">
+                <input
+                  list="categories"
                   value={formData.category}
                   id="category"
                   name="category"
                   onChange={handleChange}
-                  className={`block p-2 mx-3 border-b-4 w-[40%] h-10 text-sm text-gray-600 bg-gray-100 focus:bg-white hover:bg-white rounded-lg ${borderColor} border-[1px]`}
-                >
-                  <option value="" disabled>
-                    None
-                  </option>
+                  placeholder="Select or type a category"
+                  className={`peer m-0 block h-[58px] border-[1px] focus:shadow-md ${shadow} border-solid border-golden w-full rounded bg-transparent bg-clip-padding px-3 py-4 text-base font-normal leading-tight text-neutral-700 transition duration-200 ease-linear placeholder:text-transparent focus:border-expenseBC focus:pb-[0.625rem] focus:pt-[1.625rem] focus:text-neutral-700 focus:outline-none peer-focus:text-black [&:not(:placeholder-shown)]:pb-[0.625rem] [&:not(:placeholder-shown)]:pt-[1.625rem]
+                `}
+                />
+                <datalist id="categories">
                   {formData.type === "Income"
-                    ? categories.income.map((element, index) =>
+                    ? incomeCategories.map((element, index) =>
                         <option key={index} value={element}>
                           {element}
                         </option>
                       )
-                    : categories.expense.map((element, index) =>
-                        <option
-                          className="focus:bg-goldenHover text-sm md:text-md"
-                          key={index}
-                          value={element}
-                        >
+                    : expenseCategories.map((element, index) =>
+                        <option key={index} value={element}>
                           {element}
                         </option>
                       )}
-                </select>
-              </div>
-              <div className="flex relative flex-row items-center justify-start px-3">
-                <label htmlFor="note" className="block mx-1 my-2 w-[30%]">
-                  Note
+                </datalist>
+                <label
+                  htmlFor="category"
+                  className="pointer-events-none absolute left-0 top-0 origin-[0_0] border border-solid border-transparent px-3 py-4 text-neutral-500 transition-[opacity,_transform] duration-200 ease-linear peer-focus:-translate-y-2 peer-focus:translate-x-[0.15rem] peer-focus:scale-[0.85] peer-focus:text-black peer-[:not(:placeholder-shown)]:-translate-y-2 peer-[:not(:placeholder-shown)]:translate-x-[0.15rem] peer-[:not(:placeholder-shown)]:scale-[0.85] motion-reduce:transition-none "
+                >
+                  Category
                 </label>
+              </div>
+              <div className="relative my-1">
                 <textarea
                   type="textarea"
                   id="note"
                   name="note"
                   value={formData.note}
                   onChange={handleChange}
-                  className={`block p-2 w-[60%] mx-3 border-b-4 text-sm text-gray-600 bg-gray-100 focus:bg-white hover:bg-white rounded-lg ${borderColor} border-[1px]`}
+                  placeholder="Note"
+                  className={`peer m-0 block h-[58px] border-[1px] focus:shadow-md ${shadow} border-solid border-golden w-full rounded bg-transparent bg-clip-padding px-3 py-4 text-base font-normal leading-tight text-neutral-700 transition duration-200 ease-linear placeholder:text-transparent focus:border-expenseBC focus:pb-[0.625rem] focus:pt-[1.625rem] focus:text-neutral-700 focus:outline-none peer-focus:text-black [&:not(:placeholder-shown)]:pb-[0.625rem] [&:not(:placeholder-shown)]:pt-[1.625rem]
+                `}
                 />
+                <label
+                  htmlFor="note"
+                  className="pointer-events-none absolute left-0 top-0 origin-[0_0] border border-solid border-transparent px-3 py-4 text-neutral-500 transition-[opacity,_transform] duration-200 ease-linear peer-focus:-translate-y-2 peer-focus:translate-x-[0.15rem] peer-focus:scale-[0.85] peer-focus:text-black peer-[:not(:placeholder-shown)]:-translate-y-2 peer-[:not(:placeholder-shown)]:translate-x-[0.15rem] peer-[:not(:placeholder-shown)]:scale-[0.85] motion-reduce:transition-none "
+                >
+                  Note
+                </label>
               </div>
             </div>
           </div>

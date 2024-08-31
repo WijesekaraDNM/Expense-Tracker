@@ -3,13 +3,17 @@ export const sample_user = [
         //userId: 1,
         userName: 'masha',
         email: 'masha@gmail.com',
-        password: 'mash123'
+        password: 'mash123',
+        customIncomeCategories: [], 
+        customExpenseCategories: []
     },
     {
         //userId: 2,
         userName: 'user',
         email: 'user@gmail.com',
-        password: 'user123'
+        password: 'user123',
+        customIncomeCategories: [], 
+        customExpenseCategories: []
     },
 ];
 

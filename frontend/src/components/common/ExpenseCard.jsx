@@ -18,11 +18,12 @@ const reducer = (state, action) => {
   }
 };
 
-const ExpenseCard = ({selection}) => {
+const ExpenseCard = ({selection, onDelete, onOpen}) => {
 
   const [state,dispatch] = useReducer(reducer,initialState);
   const {transactionItems} = state
   const navigate = useNavigate();
+
 
   // useEffect(() =>{
   //   dispatch({
@@ -40,42 +41,45 @@ const ExpenseCard = ({selection}) => {
         payload: transactionItems.filter((item) => item.transactionId !== transactionID),
         
       });
+      if (onDelete) onDelete(transactionID);
       message.success("Successfully deleted the transaction!")
       setTimeout(() => {
-        window.location.reload();
-      }, 1500);
+        
+      }, 1000);
+      //window.location.reload();
     } catch (error) {
       console.error("Error deleting transaction:", error);
       message.error("Deletion failed!")
     }
   };
   const handleEdit = async () => {
-    navigate("/Form", { state:{Selection:selection}})
-    console.log("Update selection:", selection)
+    // navigate("/Form", { state:{Selection:selection}})
+    // console.log("Update selection:", selection)
+    onOpen(selection);
   };
 
   return (
-    <tr className="flex w-full bg-gray-300 border-[1px] p-1 border-slate-400 text-black">
-      <td className="flex flex-col w-[40%] lg:pl-3 pl-1 bg-white backdrop-blur-sm  rounded justify-start items-start ">
-        <div className="font-bold text-center text-[0.9rem]">{selection.name}</div>
-        <div className="font-semibold text-center text-[0.8rem] text-subText">{selection.note}</div>
+    <tr className="flex md:w-full w-[600px] bg-gray-300 border-[1px] p-1 border-slate-400 text-black">
+      <td className="flex flex-col w-[40%] pl-1 bg-white backdrop-blur-sm rounded-l justify-start items-start ">
+        <div className="font-bold text-center text-wrap text-[12px] md:text-[16px]">{selection.name}</div>
+        <div className="font-semibold text-center text-wrap text-[10px] md:text-[14px] text-subText">{selection.note}</div>
       </td>
-      <td className="flex w-[15%]  bg-white justify-start rounded items-center lg:pl-3 pl-1 font-semibold text-center text-[0.8rem]">
+      <td className="flex w-[15%]  bg-white justify-start text-wrap items-center pl-1 font-semibold text-center text-[10px] md:text-[14px]">
         {selection.category}
       </td>
-      <td className="flex w-[15%] bg-white justify-start rounded lg:pl-3 pl-1 gap-1 items-center font-semibold text-center text-[0.8rem]">
-      <MdDateRange />{selection.date}
+      <td className="flex w-[15%] bg-white justify-start pl-0.5 md:p-1 gap-0.5 md:gap-1 items-center font-semibold text-center text-[8px] md:text-[14px]">
+        <MdDateRange />{selection.date}
       </td>
-      <td  className={`flex w-[15%] ${(selection.type === "Income")?"text-incomeAmount": "text-expenseAmount"} bg-white justify-start lg:pl-3 pl-1 gap-1 rounded items-center font-bold text-center text-[1rem]`} >
+      <td  className={`flex w-[15%] ${(selection.type === "Income")?"text-incomeAmount": "text-expenseAmount"} bg-white justify-start pl-1 gap-1 items-center font-bold text-center text-[10px] md:text-[14px]`} >
       {selection.type === "Income"? <TiPlus />: <FaMinus />} Rs.{selection.amount}
       </td>
-      <td className="flex w-[15%]  gap-2 lg:pl-3 pl-1 bg-white justify-center rounded items-center font-semibold text-center text-[0.8rem]">
-        <button type="submit" className="bg-red-600 shadow-[gray] shadow-md rounded-lg items-center justify-center focus:ring-4 focus:outline-none hover:bg-[red] focus:bg-slate-600 p-2 text-white font-semibold text-sm md:text-xl"
+      <td className="flex w-[15%]  gap-0.5 md:gap-2 bg-white justify-center rounded-r items-center font-semibold text-center text-[0.8rem]">
+        <button type="submit" className="bg-red-600 shadow-[gray] shadow-md rounded-lg items-center justify-center focus:ring-4 focus:outline-none hover:bg-[red] focus:bg-slate-600 p-1 md:p-2 text-white font-semibold text-sm md:text-xl"
           onClick={() => handleDelete(selection.transactionId)}
           >
           <FaXmark/>
         </button>
-        <button type="submit" className="bg-expenseBC shadow-[gray] shadow-md rounded-lg items-center justify-center focus:ring-4 focus:outline-none hover:bg-expenseHover focus:bg-slate-600 p-2 text-white font-semibold text-sm md:text-xl"
+        <button type="submit" className="bg-expenseBC shadow-[gray] shadow-md rounded-lg items-center justify-center focus:ring-4 focus:outline-none hover:bg-expenseHover focus:bg-slate-600 p-1 md:p-2 text-white font-semibold text-sm md:text-xl"
          onClick={handleEdit}
         >
           <FaEdit/>

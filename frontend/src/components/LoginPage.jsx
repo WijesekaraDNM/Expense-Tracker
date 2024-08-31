@@ -68,7 +68,6 @@ const LoginPage = () => {
     }
   },[snackMessage]);
 
-
   return (
     <div className=" container mx-auto p-10">
       <div className="max-w-sm mx-auto bg-white px-10 py-10 rounded-2xl shadow-[0_8px_2px_-4px_#00DDA2,0_10px_20px_0_#334050]">
@@ -161,7 +160,6 @@ const LoginPage = () => {
       </div>
     </div>
   );
-
 };
 
 export default LoginPage;

@@ -8,6 +8,7 @@ import Registration from "./components/RegistrationPage";
 import PrivateRoute from "./components/common/PrivateRoute";
 import ForgotPassword from "./components/ForgotPassword";
 import { ResetPasswordPage } from "./components/ResetPasswordPage";
+import TransactionPage from "./components/transactionPage";
 
 function App() {
   return (
@@ -29,7 +30,15 @@ function App() {
             <PrivateRoute>
                   <TransactionForm/>
             </PrivateRoute>
-          }/> 
+          }/>
+          <Route
+            path="/transactionPage"
+            element={
+              <PrivateRoute>
+                <TransactionPage />
+              </PrivateRoute>
+            }
+          /> 
         </Routes>
       </BrowserRouter>
     </AuthProvider>

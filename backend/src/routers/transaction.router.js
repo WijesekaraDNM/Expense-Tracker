@@ -3,6 +3,7 @@ import { BAD_REQUEST, INTERNAL_SERVER_ERROR } from "../constants/httpStatus.js";
 import handler from 'express-async-handler';
 import { TransactionModel } from '../models/transactions.model.js';
 import { CATEGORIES } from '../config/categories.js';
+import { UserModel } from '../models/user.model.js';
 
 
 const router = Router();
@@ -10,6 +11,7 @@ const router = Router();
 router.post('/addTransaction', handler(async (req, res) => {
 
     const {name, type, date, category, amount, note, user} = req.body;
+    
         // Validate required fields
     if ( !name || !type || !date || !category || !amount || !user ) {
         return res.status(BAD_REQUEST).send("Missing required fields");
@@ -29,6 +31,8 @@ router.post('/addTransaction', handler(async (req, res) => {
 
     try{
         const result = await TransactionModel.create(newTransaction);
+        const result1 = await addToCustomCategories(user, category, type);
+        console.log("result1: ", result1);
         res.send(result);
     } catch(error){
         console.error("Error creating transaction:", error);
@@ -39,7 +43,7 @@ router.post('/addTransaction', handler(async (req, res) => {
 
 router.patch('/updateTransaction/:transactionId', handler(async (req, res) => {
     const { transactionId } = req.params;
-    const {name, type, date, category, amount, note} = req.body;
+    const {name, type, date, category, amount, note, user} = req.body;
         // Validate required fields
         if ( !name || !type || !date || !category || !amount) {
             return res.status(BAD_REQUEST).send("Missing required fields");
@@ -52,7 +56,7 @@ router.patch('/updateTransaction/:transactionId', handler(async (req, res) => {
             updateData,
             { new: true }
         );
-
+        await addToCustomCategories(user, category, type);
         res.send(updatedTransaction);
     } catch(error){
         console.error("Error updating contacts:", error);
@@ -63,53 +67,47 @@ router.patch('/updateTransaction/:transactionId', handler(async (req, res) => {
 
 router.post('/getAll/:userId', handler( async(req,res) => {
     const { userId } = req.params;
-    console.log("UserId:", userId);
+    const { startingDate, endingDate } = req.body;
+    console.log("UserId date:", startingDate);
     try{
-        const result = await TransactionModel.find({ user: userId });
-        console.log("Result:", result);
+
+        let dateFilter = {};
+
+        if (startingDate) {
+            dateFilter.$gte = startingDate;
+        }
+        if (endingDate) {
+            dateFilter.$lte = endingDate;
+        }
+
+        const result = await TransactionModel.find({ 
+            user: userId,
+            ...(startingDate || endingDate ? { date: dateFilter } : {}) 
+        });
         res.send(result);
     } catch(error){
         res.status(BAD_REQUEST).send("Transactions fetch error");
     }
 }));
 
-router.get('/categories', handler( async(req,res) => {
-    res.json(CATEGORIES);
+router.get('/categories/:userId', handler( async(req,res) => {
+    const { userId } = req.params;
+    console.log("founded UserID in cate:", userId);
+    const currentUser = await UserModel.findOne({userId:userId});
+    console.log("founded User in cate:", currentUser);
+    const incomeCategories=[...CATEGORIES.income,...currentUser.customIncomeCategories];
+    const expenseCategories=[...CATEGORIES.expense,...currentUser.customExpenseCategories];
+
+    // if (Array.isArray(currentUser.customIncomeCategories)) {
+    //     incomeCategories.push(...currentUser.customIncomeCategories);
+    // }
+
+    // if (Array.isArray(currentUser.customExpenseCategories)) {
+    //     expenseCategories.push(...currentUser.customExpenseCategories);
+    // }
+    //res.json(categories);
+    res.json({ income: incomeCategories, expense: expenseCategories });
     
-}));
-
-router.get('/totals/:userId', handler(async (req, res) => {
-    const { userId } = req.params;
-    try {
-        const totals = await calculateTotalIncomeAndExpense(userId);
-        res.json(totals);
-    } catch (error) {
-        console.error('Error calculating income and expense:', error);
-        res.status(INTERNAL_SERVER_ERROR).json({ error: 'Error calculating income and expense' });
-    }
-}));
-
-router.get('/categorical-amounts/:userId', handler(async (req, res) => {
-    const { userId } = req.params;
-    try {
-        const totals = await calculateCategoryWiseAmounts(userId);
-        res.json(totals);
-    } catch (error) {
-        console.error('Error calculating income and expense:', error);
-        res.status(INTERNAL_SERVER_ERROR).json({ error: 'Error calculating income and expense' });
-    }
-}));
-
-router.get('/totals/daily/:userId', handler(async (req, res) => {
-    const { userId } = req.params;
-    try {
-        const results = await calculateTimeBasedTotals(userId, 'day');
-        console.log("Daily Amounts:", results);
-        res.json(results);
-    } catch (error) {
-        console.error('Error calculating daily totals:', error);
-        res.status(INTERNAL_SERVER_ERROR).json({ error: 'Error calculating daily totals' });
-    }
 }));
 
 router.delete('/deleteTransaction/:transactionId',handler(async(req,res) => {
@@ -123,6 +121,7 @@ router.delete('/deleteTransaction/:transactionId',handler(async(req,res) => {
         res.status(BAD_REQUEST).send("Transaction delete error");
     }
 }));
+
 
 const generateTransactionID = async (type) =>{
 
@@ -145,107 +144,36 @@ const generateTransactionID = async (type) =>{
     }
 }
 
-export const calculateTotalIncomeAndExpense = async (userId) => {
-    const transactions = await TransactionModel.find({ user: userId });
-
-    let totalIncome = 0;
-    let totalExpense = 0;
-    let numberOfTransactions = transactions.length;
-    let numberOfIncome = 0;
-    let numberOfExpense = 0;
-    
-    transactions.forEach(transaction => {
-        if (transaction.type === 'Income') {
-            totalIncome += transaction.amount;
-            numberOfIncome++;
-        } else if (transaction.type === 'Expense') {
-            totalExpense += transaction.amount;
-            numberOfExpense++;
-        }
-    });
-
-    const rest = totalIncome - totalExpense;
-
-    return {
-        totalIncome,
-        totalExpense,
-        rest,
-        numberOfTransactions,
-        numberOfExpense,
-        numberOfIncome
-    };
-}
-
-
-export const calculateCategoryWiseAmounts = async (userId) => {
-    const transactions = await TransactionModel.find({ user: userId });
-
-    const categoryWiseIncome = CATEGORIES.income.map(category => ({
-        category,
-        amount: 0
-    }));
-
-    const categoryWiseExpense = CATEGORIES.expense.map(category => ({
-        category,
-        amount: 0
-    }));
-
-    // Iterate over transactions to calculate totals
-    transactions.forEach(transaction => {
-        const { type, amount, category } = transaction;
-
-        if (type === 'Income') {
-            const incomeCategory = categoryWiseIncome.find(item => item.category === category);
-            if (incomeCategory) incomeCategory.amount += amount;
-        } else if (type === 'Expense') {
-            const expenseCategory = categoryWiseExpense.find(item => item.category === category);
-            if (expenseCategory) expenseCategory.amount += amount;
-        }
-    });
-
-    return {
-        income: categoryWiseIncome,
-        expense: categoryWiseExpense
-    };
-};
-
-export const calculateTimeBasedTotals = async (userId, timeFrame) => {
-    const pipeline = [
-        { $match: { user: userId } },
-        {
-            $addFields: {
-                dateAsDate: { $dateFromString: { dateString: "$date" } }
-            }
-        },
-        {
-            $group: {
-                _id: {
-                    [timeFrame]: { $dateTrunc: { date: "$dateAsDate", unit: timeFrame } }
-                },
-                totalIncome: { $sum: { $cond: [{ $eq: ["$type", "Income"] }, "$amount", 0] } },
-                totalExpense: { $sum: { $cond: [{ $eq: ["$type", "Expense"] }, "$amount", 0] } }
-            }
-        },
-        {
-            $project: {
-                _id: 0,
-                date: { $dateToString: { format: "%Y-%m-%d", date: "$_id." + timeFrame } },
-                totalIncome: 1,
-                totalExpense: 1
-            }
-        },
-        { $sort: { date: 1 } }
-    ];
-
-    try {
-        const results = await TransactionModel.aggregate(pipeline);
-        console.log("Aggregation Results:", results);
-        return results;
-    } catch (error) {
-        console.error('Error calculating time-based totals:', error);
-        throw error;
+const addToCustomCategories = async (userId, category, type) => {
+    const user = await UserModel.findOne({userId:userId});
+    // if (type === 'Income' && !user.customIncomeCategories.includes(category) && ![CATEGORIES.income].includes(category)) {
+    //   user.customIncomeCategories.push(category);
+    // } else if (type === 'Expense' && !user.customExpenseCategories.includes(category) && ![CATEGORIES.expense].includes(category)) {
+    //   user.customExpenseCategories.push(category);
+    // }
+    // await user.save();
+    console.log("categoru User:",  type);
+    console.log("categoru:", category);
+    if (!user) {
+        throw new Error(`User with ID ${userId} not found`);
     }
-};
 
+    if (type === 'Income') {
+        if (!user.customIncomeCategories) {
+            user.customIncomeCategories = [];
+        }
+        if (!user.customIncomeCategories.includes(category) && !CATEGORIES.income.includes(category)) {
+            user.customIncomeCategories.push(category);
+        }
+    } else if (type === 'Expense') {
+        if (!user.customExpenseCategories) {
+            user.customExpenseCategories = [];
+        }
+        if (!user.customExpenseCategories.includes(category) && !CATEGORIES.expense.includes(category)) {
+            user.customExpenseCategories.push(category);
+        }
+    }
+    await user.save();
+  };
 
 export default router;

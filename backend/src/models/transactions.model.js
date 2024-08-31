@@ -13,26 +13,7 @@ export const TransactionSchema = new Schema(
         name : {type: String, required: true},
         date : {type:String, required:true},
         amount : {type: Number, required:true},
-        category : {
-            type: String, 
-            required:true,
-            validate: {
-            validator: function (value) {
-                // Define your categories for income and expense
-                const incomeCategories = ['Salary/Wages','Business', 'Rental', 'Pension', 'Freelance/Side Hustle', 'Investments', 'Gift/Donations', 'Other'];
-                const expenseCategories = ['Housing & Utilities', 'Food & Groceries', 'Transportation', 'Health & Medical', 'Education', 'Entertainment & Leisure', 'Debt Repayments','Savings & Investments'];
-                
-                // Check if the category is valid for the given type
-                if (this.type === 'Income') {
-                return incomeCategories.includes(value);
-                } else if (this.type === 'Expense') {
-                return expenseCategories.includes(value);
-                }
-                return false;
-            },
-            //message: props => `${props.value} is not a valid category for ${this.type}!`
-    }
-        },
+        category : {type: String, required:true},
         note : {type:String, default: "None"}
     },
 

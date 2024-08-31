@@ -28,7 +28,23 @@ export default {
         goldenHover: '#BDCDCC',
         textColor:'#FFFFF',
         subText: '#454545',
-        error: '#ef4444'
+        error: '#ef4444',
+
+
+
+        // incomeBC: '#1075D0 ',
+        // incomeHover: '#0269C6',
+        // incomeAmount: '#048320',
+        // focusColor:'#767575',
+        // expenseBC: '#F7E000',
+        // expenseHover: '#EAD503',
+        // expenseAmount: '#CC0909',
+        // blurBC: '#E8F2FE',
+        // golden: '#A0CEF8',
+        // goldenHover: '#E8F2FE',
+        // textColor:'#FFFFF',
+        // subText: '#454545',
+        // error: '#ef4444'
       },
       backgroundImage: {
         'credit-card': "url('/images/creditCard.png')",
@@ -45,6 +61,8 @@ export default {
         '3xl': '40px',
       },
       
+      
+
     },
   },
   plugins: [],

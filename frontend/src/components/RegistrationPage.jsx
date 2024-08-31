@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { message } from "antd";
+import { message,Select } from "antd";
 import { registration } from "../Services/userService";
 
 const Registration = () => {
+  // const { Option } = Select;
   const [userName, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  // const [prefferedSequence, setPrefferedSequence] = useState("");
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
 
@@ -29,6 +31,10 @@ const Registration = () => {
       errors.password = "Password must be at least 6 characters";
     }
 
+    // if (!prefferedSequence) {
+    //   errors.prefferedSequence = "Preffered Sequence is required";
+    // }
+
     return errors;
   };
 
@@ -50,6 +56,7 @@ const Registration = () => {
         setName("");
         setEmail("");
         setPassword("");
+        // setPrefferedSequence("");
         setTimeout(() => {
           setLoading(false);
           window.location.href = "/";
@@ -143,6 +150,35 @@ const Registration = () => {
                 {errors.password}
               </div>}
           </div>
+
+          {/* <div className="relative mt-5">
+            <input
+              type="text"
+              value={prefferedSequence}
+              className={`peer m-0 block h-[58px] w-full border-[1px] focus:shadow-md border-golden rounded border-solid bg-transparent bg-clip-padding px-3 py-4 text-base font-normal leading-tight text-neutral-700 transition duration-200 ease-linear placeholder:text-transparent focus:border-expenseBC  focus:pb-[0.625rem] focus:pt-[1.625rem] focus:text-neutral-700 focus:shadow-incomeBC focus:outline-none peer-focus:text-expenseBC [&:not(:placeholder-shown)]:pb-[0.625rem] [&:not(:placeholder-shown)]:pt-[1.625rem]
+                ${errors.prefferedSequence ? "border-error" : ""}`}
+              id="prefferedSequenceInput"
+              list="prefferedSequenceList"
+              name="prefferedSequenceInput"
+              placeholder="prefferedSequence"
+              onChange={e => setPrefferedSequence(e.target.value)}
+              required
+            />
+              <datalist id="prefferedSequenceList">
+                <option value="Daily">Daily</option>  
+                <option value="Monthly">Monthly</option> 
+              </datalist>
+            <label
+              htmlFor="prefferedSequenceInput"
+              className="pointer-events-none absolute left-0 top-0 origin-[0_0] border border-solid border-transparent px-3 py-4 text-neutral-500 transition-[opacity,_transform] duration-200 ease-linear  peer-focus:-translate-y-2 peer-focus:translate-x-[0.15rem] peer-focus:scale-[0.85] peer-focus:text-primary peer-[:not(:placeholder-shown)]:-translate-y-2 peer-[:not(:placeholder-shown)]:translate-x-[0.15rem] peer-[:not(:placeholder-shown)]:scale-[0.85] motion-reduce:transition-none "
+            >
+              Preffered Sequence
+            </label>
+            {errors.prefferedSequence &&
+              <div className="text-error text-sm">
+                {errors.prefferedSequence}
+              </div>}
+          </div> */}
 
           <button
             onClick={handleRegister}
