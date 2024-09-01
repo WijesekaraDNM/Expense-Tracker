@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useAuth } from "../hooks/useAuth";
 import { PieChart } from "@mui/x-charts";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer, Line, ComposedChart, Legend } from 'recharts';
@@ -30,6 +30,8 @@ const Dashboard = ({ setLocalStartingDate, setLocalEndingDate, databaseUpdate })
   const [showNetIncomeCard, setShowNetIncomeCard] = useState(false);
   const [startingDate, setStartingDate] = useState();
   const [endingDate, setEndingDate] = useState();
+  const bottom1ElementRef = useRef(null);
+  const bottom2ElementRef = useRef(null);
 
   useEffect(() => {
 
@@ -61,6 +63,30 @@ const Dashboard = ({ setLocalStartingDate, setLocalEndingDate, databaseUpdate })
     },
     [userId, startingDate, endingDate,databaseUpdate ]
   );
+
+  useEffect(() => {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          console.log("Element in view:", entry.target); // Should log when the element is in view
+          if (entry.target === bottom1ElementRef.current) {
+            console.log('Bottom1 Element in view');
+            entry.target.classList.add('bottom1');
+          } else if (entry.target === bottom2ElementRef.current) {
+            console.log('Bottom2 Element in view');
+            entry.target.classList.add('bottom2');
+          }
+          observer.unobserve(entry.target); // Stop observing once the animation is triggered
+        }
+      });
+    }, { threshold: 0.5 });
+  
+    if (bottom1ElementRef.current) observer.observe(bottom1ElementRef.current);
+    if (bottom2ElementRef.current) observer.observe(bottom2ElementRef.current);
+  
+    return () => observer.disconnect();
+  }, []);
+  
 
   const handleStartingDate = (e) => {
     setLocalStartingDate(e.target.value);
@@ -199,23 +225,7 @@ const valueFormatter = (value) => `$${value}`;
       
     <div className="grid grid-cols-1 lg:grid-cols-8 justify-center w-full">
       <div className=" relative lg:flex hidden  lg:col-span-2 ">
-        <div className="absolute left-2 h-60 hover:z-50 w-60 border-[2rem] border-incomeBC border-solid rounded-full items-center flex justify-center focus:bg-white hover:bg-white shadow-[0_4px_9px_-4px_#9e9e9e] hover:shadow-[0_8px_9px_-4px_#9e9e9e,0_4px_18px_0_#7e7d7d] hover:shadow-incomeBC focus:shadow-[0_8px_9px_-4px_#9e9e9e,0_4px_18px_0_#7e7d7d] focus:outline-none focus:ring-0 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] transition duration-150 ease-in-out">
-          <div className="relative m-2">
-              <input
-                type="date"
-                className="peer m-0 block h-[58px] border-[1px] focus:shadow-md focus:shadow-incomeBC border-solid border-golden w-full rounded bg-transparent bg-clip-padding px-3 py-4 text-base font-normal leading-tight text-black transition duration-200 ease-linear placeholder:text-transparent focus:border-white focus:pb-[0.625rem] focus:pt-[1.625rem] focus:text-neutral-700 focus:outline-none peer-focus:text-black [&:not(:placeholder-shown)]:pb-[0.625rem] [&:not(:placeholder-shown)]:pt-[1.625rem]"
-                id="floatingDate"
-                onChange={handleStartingDate}
-              />
-              <label
-                htmlFor="floatingDate"
-                className="pointer-events-none absolute font-bold left-0 top-0 origin-[0_0] border border-solid border-transparent px-3 py-4 text-black transition-[opacity,_transform] duration-200 ease-linear peer-focus:-translate-y-2 peer-focus:translate-x-[0.15rem] peer-focus:scale-[0.85] peer-focus:text-black peer-[:not(:placeholder-shown)]:-translate-y-2 peer-[:not(:placeholder-shown)]:translate-x-[0.15rem] peer-[:not(:placeholder-shown)]:scale-[0.85] motion-reduce:transition-none "
-              >
-                Starting Date
-              </label>
-          </div>
-        </div>
-        <div className="absolute top-32 hover:z-50 left-32 h-60 w-60 border-[2rem] border-expenseBC border-solid rounded-full items-center flex justify-center focus:bg-white hover:bg-white shadow-[0_4px_9px_-4px_#9e9e9e] hover:shadow-[0_8px_9px_-4px_#9e9e9e,0_4px_18px_0_#7e7d7d] hover:shadow-expenseBC focus:shadow-[0_8px_9px_-4px_#9e9e9e,0_4px_18px_0_#7e7d7d] focus:outline-none focus:ring-0 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] transition duration-150 ease-in-out">
+        <div className="absolute end left-2 h-60 hover:z-50 w-60 border-[2rem] border-solid rounded-full items-center flex justify-center focus:bg-white hover:bg-white shadow-[0_4px_9px_-4px_#9e9e9e] hover:shadow-[0_8px_9px_-4px_#9e9e9e,0_4px_18px_0_#7e7d7d] hover:shadow-incomeBC focus:shadow-[0_8px_9px_-4px_#9e9e9e,0_4px_18px_0_#7e7d7d] focus:outline-none focus:ring-0 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] transition duration-150 ease-in-out">
           <div className="m-2 relative">
             <input
               type="date"
@@ -229,6 +239,22 @@ const valueFormatter = (value) => `$${value}`;
             >
               Ending Date
             </label>
+          </div>
+        </div>
+        <div className="absolute start top-32 hover:z-50 left-32 h-60 w-60 border-[2rem] border-solid rounded-full items-center flex justify-center focus:bg-white hover:bg-white shadow-[0_4px_9px_-4px_#9e9e9e] hover:shadow-[0_8px_9px_-4px_#9e9e9e,0_4px_18px_0_#7e7d7d] hover:shadow-expenseBC focus:shadow-[0_8px_9px_-4px_#9e9e9e,0_4px_18px_0_#7e7d7d] focus:outline-none focus:ring-0 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] transition duration-150 ease-in-out">
+          <div className="relative m-2">
+              <input
+                type="date"
+                className="peer m-0 block h-[58px] border-[1px] focus:shadow-md focus:shadow-incomeBC border-solid border-golden w-full rounded bg-transparent bg-clip-padding px-3 py-4 text-base font-normal leading-tight text-black transition duration-200 ease-linear placeholder:text-transparent focus:border-white focus:pb-[0.625rem] focus:pt-[1.625rem] focus:text-neutral-700 focus:outline-none peer-focus:text-black [&:not(:placeholder-shown)]:pb-[0.625rem] [&:not(:placeholder-shown)]:pt-[1.625rem]"
+                id="floatingDate"
+                onChange={handleStartingDate}
+              />
+              <label
+                htmlFor="floatingDate"
+                className="pointer-events-none absolute font-bold left-0 top-0 origin-[0_0] border border-solid border-transparent px-3 py-4 text-black transition-[opacity,_transform] duration-200 ease-linear peer-focus:-translate-y-2 peer-focus:translate-x-[0.15rem] peer-focus:scale-[0.85] peer-focus:text-black peer-[:not(:placeholder-shown)]:-translate-y-2 peer-[:not(:placeholder-shown)]:translate-x-[0.15rem] peer-[:not(:placeholder-shown)]:scale-[0.85] motion-reduce:transition-none "
+              >
+                Starting Date
+              </label>
           </div>
         </div>
       </div>
@@ -278,12 +304,12 @@ const valueFormatter = (value) => `$${value}`;
         </div>
     </div>
     <div className="lg:hidden flex justify-center items-center">
-    <div className=" relative lg:hidden flex py-5 lg:col-span-2 ">
-      <div className=" p-3 w-full h-20 rounded-l-full bottom1 items-center flex justify-center focus:bg-white hover:bg-white shadow-[0_4px_9px_-4px_#9e9e9e] hover:shadow-[0_8px_9px_-4px_#9e9e9e,0_4px_18px_0_#7e7d7d] hover:shadow-incomeBC focus:shadow-[0_8px_9px_-4px_#9e9e9e,0_4px_18px_0_#7e7d7d] focus:outline-none focus:ring-0 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] transition duration-150 ease-in-out">
+    <div className=" relative  lg:hidden flex py-5 lg:col-span-2 ">
+      <div ref={bottom1ElementRef} className=" p-3 pr-0 opacity-0  w-full h-20 rounded-l bottom1 items-center flex justify-center focus:bg-white hover:bg-white shadow-[0_4px_9px_-4px_#9e9e9e] hover:shadow-[0_8px_9px_-4px_#9e9e9e,0_4px_18px_0_#7e7d7d] hover:shadow-incomeBC focus:shadow-[0_8px_9px_-4px_#9e9e9e,0_4px_18px_0_#7e7d7d] focus:outline-none focus:ring-0 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] transition duration-150 ease-in-out ">
         <div className="relative m-2">
           <input
             type="date"
-            className="peer m-0 block h-[58px] border-[1px] focus:shadow-md focus:shadow-incomeBC border-solid border-golden w-full rounded bg-transparent bg-clip-padding px-3 py-4 text-base font-normal leading-tight text-black transition duration-200 ease-linear placeholder:text-transparent focus:border-white focus:pb-[0.625rem] focus:pt-[1.625rem] focus:text-neutral-700 focus:outline-none peer-focus:text-black [&:not(:placeholder-shown)]:pb-[0.625rem] [&:not(:placeholder-shown)]:pt-[1.625rem]"
+            className="peer m-0 block h-[50px] border-[1px] focus:shadow-md focus:shadow-incomeBC border-solid border-white w-36 rounded bg-transparent bg-clip-padding px-3 py-4 text-base font-normal leading-tight text-black transition duration-200 ease-linear placeholder:text-transparent focus:border-white focus:pb-[0.625rem] focus:pt-[1.625rem] focus:text-neutral-700 focus:outline-none peer-focus:text-black [&:not(:placeholder-shown)]:pb-[0.625rem] [&:not(:placeholder-shown)]:pt-[1.625rem]"
             id="floatingDate"
             onChange={handleStartingDate}
           />
@@ -295,11 +321,11 @@ const valueFormatter = (value) => `$${value}`;
           </label>
         </div>
       </div>
-      <div className="  p-3 w-full h-20 rounded-r-full items-center bottom2 flex justify-center focus:bg-white hover:bg-white shadow-[0_4px_9px_-4px_#9e9e9e] hover:shadow-[0_8px_9px_-4px_#9e9e9e,0_4px_18px_0_#7e7d7d] hover:shadow-expenseBC focus:shadow-[0_8px_9px_-4px_#9e9e9e,0_4px_18px_0_#7e7d7d] focus:outline-none focus:ring-0 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] transition duration-150 ease-in-out">
+      <div ref={bottom2ElementRef} className=" opacity-0 p-3 pl-0 w-full h-20 rounded-r items-center bottom2 flex justify-center focus:bg-white hover:bg-white shadow-[0_4px_9px_-4px_#9e9e9e] hover:shadow-[0_8px_9px_-4px_#9e9e9e,0_4px_18px_0_#7e7d7d] hover:shadow-expenseBC focus:shadow-[0_8px_9px_-4px_#9e9e9e,0_4px_18px_0_#7e7d7d] focus:outline-none focus:ring-0 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] transition duration-150 ease-in-out">
         <div className="m-2 relative">
           <input
             type="date"
-            className="peer m-0 block h-[58px] border-[1px] focus:shadow-md focus:shadow-incomeBC border-solid border-golden w-full rounded bg-transparent bg-clip-padding px-3 py-4 text-base font-normal leading-tight text-black transition duration-200 ease-linear placeholder:text-transparent focus:border-white focus:pb-[0.625rem] focus:pt-[1.625rem] focus:text-neutral-700 focus:outline-none peer-focus:text-black [&:not(:placeholder-shown)]:pb-[0.625rem] [&:not(:placeholder-shown)]:pt-[1.625rem]"
+            className="peer m-0 block h-[50px] border-[1px] focus:shadow-md focus:shadow-incomeBC border-solid w-36 border-golden rounded bg-transparent bg-clip-padding px-3 py-4 text-base font-normal leading-tight text-black transition duration-200 ease-linear placeholder:text-transparent focus:border-white focus:pb-[0.625rem] focus:pt-[1.625rem] focus:text-neutral-700 focus:outline-none peer-focus:text-black [&:not(:placeholder-shown)]:pb-[0.625rem] [&:not(:placeholder-shown)]:pt-[1.625rem]"
             id="floatingDate"
             onChange={handleEndingDate}
           />
@@ -319,10 +345,10 @@ const valueFormatter = (value) => `$${value}`;
         <p className=" font-bold text-2xl">Rs. {formatAmount(calculations.rest)}</p>
       </div>
     </div>
-    <div className="flex pipe-border mx-2 lg:mt-4"></div>
+    <div className={`flex ${calculations.rest < 0 ? "pipe-border2": " pipe-border1"}  mx-2 lg:mt-4`}></div>
     <div className="grid lg:grid-cols-2 grid-cols-1 px-2 gap-3 ">
-      <div className="flex bg-expenseBC rounded-r justify-center lg:justify-start flex-row-reverse lg:flex-row">
-        <div className="flex justify-center items-center bg-gray-200 rounded-full  relative m-3 p-2">
+      <div className={`flex ${calculations.rest < 0 ? "bg-incomeBC": " bg-expenseBC"} rounded-r justify-center lg:justify-start flex-row-reverse lg:flex-row`}>
+        <div className="flex justify-center items-center bg-gray-200 rounded-full  relative m-2 lg:m-3 p-2">
           <PieChart
             series={[
               {
@@ -344,6 +370,7 @@ const valueFormatter = (value) => `$${value}`;
             width={180}
             height={180}
             slotProps={{ legend: { hidden: true } }}
+            className="responsive-chart"
             
           />
            <div style={{
@@ -358,13 +385,13 @@ const valueFormatter = (value) => `$${value}`;
             }}>
            {(selectedIncomeCategory !== null)? (
             <div>
-                  <span className=" text-sm lg:text-md text-expenseBC font-serif">{selectedIncomeCategory}</span>
+                  <span className=" text-[10px] font-bold lg:text-md text-expenseBC font-serif">{selectedIncomeCategory}</span>
                   <br /><span className=" text-md lg:text-lg text-incomeAmount font-mono">  Rs.{selectedIncomeAmount}</span>
             </div>
             ):(<span className=" text-lg lg:text-xl text-expenseBC font-serif"><img src="/money_Increase.png" alt="" className=" bg-cover w-16 h-16"/></span>)}
             </div>
         </div>
-        <div className="flex flex-col lg:col-start-1 lg:row-start-1 p-3 m-3 rounded-lg border-incomeBC bg-white text-center justify-center items-center w-[60%]">
+        <div className="flex flex-col h-32 sm:h-auto lg:col-start-1 lg:row-start-1 p-3 m-3 rounded-lg border-incomeBC bg-white text-center justify-center items-center w-[60%]">
           <p className=" text-black font-bold text-2xl md:text-4xl font-sans p-3">
             Total Income
           </p>
@@ -373,14 +400,14 @@ const valueFormatter = (value) => `$${value}`;
           </p>
         </div>
       </div>
-      <div className="flex bg-expenseBC rounded-l justify-center lg:justify-end  ">
-        <div className="flex flex-col p-3 pt-6 m-3 bg-white justify-center text-center items-center rounded-lg w-[60%]">
-          <p className=" text-gray-800 text-2xl md:text-4xl font-bold font-sans p-3">Total Expense</p>
-          <p className=" text-expenseAmount font-semibold font-mono md:text-3xl text-2xl">
+      <div className={`flex ${calculations.rest < 0 ? "bg-incomeBC": " bg-expenseBC"} rounded-l justify-center lg:justify-end`}>
+        <div className="flex flex-col p-3 h-32 sm:h-auto m-3 bg-white justify-center text-center items-center rounded-lg w-[60%]">
+          <p className="flex text-gray-800 text-2xl md:text-4xl font-bold font-sans p-3">Total Expense</p>
+          <p className="flex text-expenseAmount font-semibold font-mono md:text-3xl text-2xl">
             Rs{formatAmount(calculations.totalExpense)}
           </p>
         </div>
-        <div className="flex justify-center items-center bg-gray-200 rounded-full relative p-2 m-3">
+        <div className="flex justify-center items-center bg-gray-200 rounded-full relative p-2 m-2 lg:m-3">
           <PieChart
             series={[
               {
@@ -401,6 +428,7 @@ const valueFormatter = (value) => `$${value}`;
             width={180}
             height={180}
             slotProps={{ legend: { hidden: true } }}
+            className="responsive-chart"
             
           />
            <div style={{
@@ -415,7 +443,7 @@ const valueFormatter = (value) => `$${value}`;
             }}>
            {(selectedExpenseCategory !== null)? (
             <div>
-                  <span className=" text-sm lg:text-md text-expenseBC font-serif">{selectedExpenseCategory}</span>
+                  <span className=" text-[10px] font-bold lg:text-md text-expenseBC font-serif">{selectedExpenseCategory}</span>
                   <br /><span className=" text-md lg:text-lg  text-expenseAmount font-mono">  Rs.{selectedExpenseAmount}</span>
             </div>
             ):(<span className=" text-xl text-expenseBC font-serif"><img src="/money_Decrease.png" alt="" className=" bg-cover w-16 h-16"/></span>)}
@@ -423,7 +451,7 @@ const valueFormatter = (value) => `$${value}`;
         </div>
         <div className="net-income-card hidden lg:flex">
           <div className={` flex flex-col items-center justify-center ${calculations.rest < 0 ? "bg-expenseBC text-white": " bg-incomeBC text-black"} text-lg p-5 rounded-lg shadow-2xl shadow-expenseBC`}>
-            <h3 className="text-[#9d2828] font-bold">Net Income</h3>
+            <h3 className={` ${calculations.rest < 0 ? "text-[#f93838]": "text-[#ad2525]"} font-bold text-xl`}>Net Income</h3>
             <p className=" font-bold text-2xl">Rs. {formatAmount(calculations.rest)}</p>
           </div>
       </div>

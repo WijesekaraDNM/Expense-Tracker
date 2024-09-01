@@ -11,8 +11,8 @@ const HomePage = () => {
   const [refreshKey, setRefreshKey] = useState(0);
   const [databaseUpdate,setDatabaseUpdate] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [userId, setUserId] = useState(null);
-  const [userName, setUserName] = useState(null);
+  const { userId } = useAuth()
+;  const { userName } = useAuth();
 
   const handleLogout = async e => {
     e.preventDefault();

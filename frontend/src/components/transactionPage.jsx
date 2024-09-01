@@ -47,7 +47,10 @@ const TransactionPage = ({ startingDate, endingDate, databaseUpdate }) => {
   const [popupSelection, setPopupSelection] = useState();
   const leftElementRef = useRef(null);
   const rightElementRef = useRef(null);
-  const hasAnimatedRef = useRef(false);
+  const tableRef = useRef(null);
+  const tag1Ref = useRef(null);
+  const tag2Ref = useRef(null);
+  const tag3Ref = useRef(null);
 
   useEffect(() => {
     const loadTransactions = getTransactions(userId, { startingDate, endingDate});
@@ -62,49 +65,49 @@ const TransactionPage = ({ startingDate, endingDate, databaseUpdate }) => {
       dispatch({ type: "Transactions_Loaded", payload: transactionItems });
     });
 
-  }, [userId, startingDate, endingDate]);
+  }, [userId, startingDate, endingDate, isDatabaseUpdated]);
 
   useEffect(() => {
-    const observerOptions = {
-      root: null, // Uses the viewport as the root
-      threshold: 0.1, // Trigger the callback when 10% of the element is visible
-    };
-  
-    const observerCallback = (entries, observer) => {
+    const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
-        if (entry.isIntersecting && !entry.target.classList.contains('has-animated')) {
-          if (entry.target.classList.contains('left')) {
-            entry.target.classList.add('animate-left', 'has-animated');
-          } else if (entry.target.classList.contains('right')) {
-            entry.target.classList.add('animate-right', 'has-animated');
+        if (entry.isIntersecting) {
+          console.log("Element in view:", entry.target); // Should log when the element is in view
+          if (entry.target === leftElementRef.current) {
+            console.log('Left Element in view');
+            entry.target.classList.add('left');
+          } else if (entry.target === rightElementRef.current) {
+            console.log('Right Element in view');
+            entry.target.classList.add('right');
+          } else if (entry.target === tableRef.current){
+            console.log('table in view');
+            entry.target.classList.add('table');
+          } else if (entry.target === tag1Ref.current || entry.target === tag2Ref.current || entry.target === tag3Ref.current){
+            console.log('tags in view');
+            entry.target.classList.add('tag');
           }
-          observer.unobserve(entry.target); // Stop observing the element after the animation is triggered
+          observer.unobserve(entry.target); // Stop observing once the animation is triggered
         }
       });
-    };
-  
-    const observer = new IntersectionObserver(observerCallback, observerOptions);
+    }, { threshold: 0.5 });
   
     if (leftElementRef.current) observer.observe(leftElementRef.current);
     if (rightElementRef.current) observer.observe(rightElementRef.current);
-  
-    return () => {
-      if (leftElementRef.current) observer.unobserve(leftElementRef.current);
-      if (rightElementRef.current) observer.unobserve(rightElementRef.current);
-    };
+    if (tableRef.current) observer.observe(tableRef.current);
+    if (tag1Ref.current) observer.observe(tag1Ref.current);
+    if (tag2Ref.current) observer.observe(tag2Ref.current);
+    if (tag3Ref.current) observer.observe(tag3Ref.current);
+    return () => observer.disconnect();
   }, []);
+  
 
-  // useEffect(() => {
-  //   if (isDatabaseUpdated) {
-  //     if (databaseUpdate) {
-  //       databaseUpdate();
-  //     }
-  //     // Reset istransactionAddEdit after operation
-  //     setIsDatabaseUpdated(false);
-  //   }
-  //   console.log("transactionPage added1:", isDatabaseUpdated);
-    
-  // }, [isDatabaseUpdated, databaseUpdate]);
+  useEffect(() => {
+    if (isDatabaseUpdated) {
+      databaseUpdate();
+      // Reset istransactionAddEdit after operation
+    }
+    console.log("transactionPage added1:", isDatabaseUpdated);
+    setIsDatabaseUpdated(false);
+  }, [isDatabaseUpdated, databaseUpdate]);
 
   useEffect(
     () => {
@@ -128,16 +131,6 @@ const TransactionPage = ({ startingDate, endingDate, databaseUpdate }) => {
     },
     [state.transactionItems, selectedTag, selectedCategory]
   );
-
-  useEffect(() => {
-    if (isDatabaseUpdated) {
-      if(databaseUpdate){
-        databaseUpdate();
-      }
-    }
-    console.log("transactionPage added1:", isDatabaseUpdated);
-    setIsDatabaseUpdated(false);
-  }, [isDatabaseUpdated,databaseUpdate]);
 
   const handleTagClick = tag => {
     setSelectedTag(tag);
@@ -167,6 +160,7 @@ const TransactionPage = ({ startingDate, endingDate, databaseUpdate }) => {
 
   const closePopupWindow = () => {
     setIsPopupWindowOpened(false);
+    setPopupSelection(null);
   };
 
   const handleTag = tag => {
@@ -181,10 +175,10 @@ const TransactionPage = ({ startingDate, endingDate, databaseUpdate }) => {
     dispatch({ type: "Transaction_Deleted", payload: transactionId });
   };
   const handleTransactionAddEdit = async () => {
-    setIsDatabaseUpdated(!isDatabaseUpdated);
+    setIsDatabaseUpdated(true);
     console.log("transactionAdded:transactionpage: ", isDatabaseUpdated);
-    const updatedTransactions = await getTransactions(userId, { startingDate, endingDate });
-    dispatch({ type: "Transactions_Loaded", payload: updatedTransactions });
+    // const updatedTransactions = await getTransactions(userId, { startingDate, endingDate });
+    // dispatch({ type: "Transactions_Loaded", payload: updatedTransactions });
   };
   const handleUpdateSelection = (selection) => {
     setPopupSelection(selection);
@@ -196,14 +190,14 @@ const TransactionPage = ({ startingDate, endingDate, databaseUpdate }) => {
       <div className="flex items-center lg:col-span-1 h-full ">
         <div className=" w-full rounded-lg gap-3 runded-xl">
           <div className="flex flex-col p-10 gap-3 ">
-            <div  ref={leftElementRef}
-              className="flex left w-full h-40 justify-center cursor-pointer items-center rounded-lg text-[2rem] opacity-100 text-center hover:bg-incomeHover focus:bg-focusColor focus:test-gray-500 shadow-[0_4px_9px_-4px_#9e9e9e] hover:shadow-[0_8px_9px_-4px_#9e9e9e,0_4px_18px_0_#7e7d7d] focus:shadow-[0_8px_9px_-4px_#9e9e9e,0_4px_18px_0_#7e7d7d] focus:outline-none focus:ring-0 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] transition duration-150 ease-in-out "
+            <div  ref={leftElementRef} data-animation = "left"
+              className="flex opacity-0 transform-translateX(0%) w-full h-40 justify-center cursor-pointer items-center rounded-lg text-[2rem] text-center hover:bg-incomeHover focus:bg-focusColor focus:test-gray-500 shadow-[0_4px_9px_-4px_#9e9e9e] hover:shadow-[0_8px_9px_-4px_#9e9e9e,0_4px_18px_0_#7e7d7d] focus:shadow-[0_8px_9px_-4px_#9e9e9e,0_4px_18px_0_#7e7d7d] focus:outline-none focus:ring-0 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] transition duration-150 ease-in-out "
               onClick={e => handleIncomeCard()}
             >
               Income
             </div>
-            <div ref={rightElementRef}
-              className=" flex right w-full h-40 cursor-pointer rounded-lg text-[2rem] text-white opacity-100 text-center justify-center items-center hover:bg-expenseHover focus:test-gray-500 focus:bg-gray-transparent shadow-[0_4px_9px_-4px_#9e9e9e] hover:shadow-[0_8px_9px_-4px_#9e9e9e,0_4px_18px_0_#7e7d7d] focus:shadow-[0_8px_9px_-4px_#9e9e9e,0_4px_18px_0_#7e7d7d] focus:outline-none focus:ring-0 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] transition duration-150 ease-in-out "
+            <div ref={rightElementRef} data-animation = "right"
+              className=" flex opacity-0 transform-translateX(0%)  w-full h-40 cursor-pointer rounded-lg text-[2rem] text-white text-center justify-center items-center hover:bg-expenseHover focus:test-gray-500 focus:bg-gray-transparent shadow-[0_4px_9px_-4px_#9e9e9e] hover:shadow-[0_8px_9px_-4px_#9e9e9e,0_4px_18px_0_#7e7d7d] focus:shadow-[0_8px_9px_-4px_#9e9e9e,0_4px_18px_0_#7e7d7d] focus:outline-none focus:ring-0 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] transition duration-150 ease-in-out "
               onClick={e => handleExpenseCard()}
             >
               Expense
@@ -214,7 +208,7 @@ const TransactionPage = ({ startingDate, endingDate, databaseUpdate }) => {
       <div className="  lg:col-span-2  rounded-lg">
         <div className=" w-full h-full bg-blurBC backdrop:blur-3xl rounded-lg border-[1px] border-incomeBC ">
           <div className="md:flex hidden flex-row justify-center items-center my-6 mx-10 text-black font-semibold">
-            <Tag
+            <Tag ref={tag1Ref} data-animation = "tag"
               className={`w-full h-8 ${selectedTag === "All"
                 ? "bg-gradient-to-r from-incomeHover to-expenseHover text-white"
                 : "bg-gray-400"} hover:bg-goldenHover text-[1rem] text-center m-1 p-1 shadow-md cursor-pointer`}
@@ -223,7 +217,7 @@ const TransactionPage = ({ startingDate, endingDate, databaseUpdate }) => {
               All
             </Tag>
             
-            <Tag
+            <Tag ref={tag2Ref} data-animation = "tag"
               className={`w-full h-8 ${selectedTag === "Income"
                 ? "bg-incomeBC text-white"
                 : "bg-gray-400"} hover:bg-incomeHover focus:bg-focusColor text-[1rem] text-center m-1 p-1 shadow-md cursor-pointer`}
@@ -244,7 +238,7 @@ const TransactionPage = ({ startingDate, endingDate, databaseUpdate }) => {
                   )}
                 </Select>}
             </Tag>
-            <Tag
+            <Tag ref={tag3Ref} data-animation = "tag"
               className={`w-full h-8 ${selectedTag === "Expense"
                 ? "bg-expenseBC text-white"
                 : "bg-gray-400"} hover:bg-expenseHover hover:text-white focus:bg-focusColor text-[1rem] text-center m-1 p-1 shadow cursor-pointer`}
@@ -276,7 +270,7 @@ const TransactionPage = ({ startingDate, endingDate, databaseUpdate }) => {
                 : <FaBars className="h-6 w-6 " />}
             </button>
           </div>
-          <div
+          <div  
             className={`absolute space-y-2 z-30  right-10 w-[200px] mb-2 rounded-l-lg justify-end items-center py-3 transition-all duration-500000 ease-in-out  bg-primary bg-opacity-10  shadow-lg border-[3px] border-golden border-opacity-50 ${isMenuOpen
               ? " h-auto w-48 block justify-center items-center hover:transition-transform hovet:text-opacity-100  hover:duration-50000 hover:ease-in-out text-opacity-0 text-subText hover:text-opacity-100 hover:bg-white hover:border-opacity-100 mb-10"
               : "hidden"}`}
@@ -330,9 +324,9 @@ const TransactionPage = ({ startingDate, endingDate, databaseUpdate }) => {
               </li>
             </ul>
           </div>
-          <div className="backdrop-blur-md bg-white/90 p-2 m-3 border-[2px] rounded border-golden overflow-x-auto">
+          <div className="backdrop-blur-md  bg-white/90 p-2 m-3 border-[2px] rounded border-golden overflow-x-auto">
             <div className=" py-1.3 ">
-              <table className=" table-auto w-full h-[400px]">
+              <table ref={tableRef} data-animation = "table" className=" table-auto w-full h-[400px]">
                 <thead className=" w-full sm:no z-50 text-[0.8rem] md:text-[1rem] text-[black] font-semibold bg-goldenHover">
                   <tr key="index" className="flex w-full ">
                     <th className="flex w-[40%] border-[1px] pl-3 border-gray-500 justify-start items-center ">
@@ -377,7 +371,7 @@ const TransactionPage = ({ startingDate, endingDate, databaseUpdate }) => {
         <div className="fixed cursor-pointer z-50 top-0 left-0 w-full h-full flex justify-center items-center bg-black bg-opacity-80">
           <div className=" h-[95%] rounded-lg shadow-lg w-2/5 relative">
             <div className="relative flex">
-              <TransactionForm type={popupType} Selection={popupSelection} onClose={closePopupWindow} onAddEdit={handleTransactionAddEdit} />
+              <TransactionForm type={popupType} Selection={popupSelection} onClose={closePopupWindow} onAddEdit={() =>{handleTransactionAddEdit()}} />
             </div>
           </div>
         </div>

@@ -81,14 +81,12 @@ const TransactionForm = ({ Selection, type, onClose, onAddEdit }) => {
   useEffect(
     () => {
       if (istransactionAddEdit) {
-        if (onAddEdit) {
-          onAddEdit();
-        }
+        onAddEdit();
         // Reset istransactionAddEdit after operation
         setIstransactionAddEdit(false);
       }
     },
-    [istransactionAddEdit, onAddEdit]
+    [istransactionAddEdit]
   );
 
   const handleChange = e => {
@@ -110,11 +108,11 @@ const TransactionForm = ({ Selection, type, onClose, onAddEdit }) => {
       return;
     } else {
       try {
-        const response = addTransaction({ ...formData });
+        const response = await addTransaction({ ...formData });
         console.log("Form submitted succedded: ", response.data);
         message.success("Transaction is added!");
 
-        setIstransactionAddEdit(!`istransactionAddEdit`);    
+        setIstransactionAddEdit(true);    
         setTimeout(() => {
           //window.location.reload();
           setFormData({
@@ -127,7 +125,7 @@ const TransactionForm = ({ Selection, type, onClose, onAddEdit }) => {
           });
           onClose();
           // onTransactionComplete();
-        }, 5000);
+        }, 2000);
         //window.location.reload();
       } catch (error) {
         console.error("Error submitting form:", error);
@@ -147,7 +145,7 @@ const TransactionForm = ({ Selection, type, onClose, onAddEdit }) => {
       return;
     } else {
       try {
-        updateTransaction(formData.transactionId, {
+        await updateTransaction(formData.transactionId, {
           user: formData.user,
           name: formData.name,
           date: formData.date,
@@ -173,7 +171,7 @@ const TransactionForm = ({ Selection, type, onClose, onAddEdit }) => {
             type: type || Selection.type
           });
           onClose();
-        }, 5000);
+        }, 2000);
         //window.location.reload();
       } catch (error) {
         console.error("Error updating form:", error);
