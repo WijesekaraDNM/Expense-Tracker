@@ -85,10 +85,11 @@ export const ResetPasswordPage = () => {
         </div>}
       <div className="max-w-sm mx-auto bg-white px-10 py-10 rounded-2xl shadow-[0_8px_2px_-4px_#00DDA2,0_10px_20px_0_#334050]">
         <div className="text-center mb-8">
-          <h1 className="font-bold text-3xl text-expenseBC">Reset Password</h1>
+          <h1 className="font-bold text-xl text-expenseBC">Reset Your Password</h1>
         </div>
+        <p className="pt-2 pb-1 text-sm font-sans ">Enter your new password and confirm it.</p>
         <form onSubmit={handleResetPassword}>
-          <div className="relative mt-5 mb-8 ">
+          <div className="relative mt-1 mb-5">
             <input
               type="password"
               value={password}
@@ -111,7 +112,7 @@ export const ResetPasswordPage = () => {
                 {errors.password}
               </div>}
           </div>
-          <div className="relative mt-5 mb-8">
+          <div className="relative mt-4 mb-8">
             <input
               type="password"
               value={confirmPassword}

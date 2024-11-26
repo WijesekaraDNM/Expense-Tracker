@@ -125,7 +125,7 @@ const TransactionForm = ({ Selection, type, onClose, onAddEdit }) => {
           });
           onClose();
           // onTransactionComplete();
-        }, 2000);
+        }, 1000);
         //window.location.reload();
       } catch (error) {
         console.error("Error submitting form:", error);
@@ -133,6 +133,7 @@ const TransactionForm = ({ Selection, type, onClose, onAddEdit }) => {
       }
     }
   };
+
   const handleEdit = async e => {
     e.preventDefault();
     if (
@@ -159,7 +160,7 @@ const TransactionForm = ({ Selection, type, onClose, onAddEdit }) => {
         //   ...formData
         // });
         message.success("Transaction is updated!");
-        setIstransactionAddEdit(!istransactionAddEdit);
+        setIstransactionAddEdit(true);
         setTimeout(() => {
           // onTransactionComplete();
           setFormData({
@@ -171,7 +172,7 @@ const TransactionForm = ({ Selection, type, onClose, onAddEdit }) => {
             type: type || Selection.type
           });
           onClose();
-        }, 2000);
+        }, 1000);
         //window.location.reload();
       } catch (error) {
         console.error("Error updating form:", error);

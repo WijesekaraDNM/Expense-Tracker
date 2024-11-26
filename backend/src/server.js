@@ -25,7 +25,7 @@ app.use('/api/calculations', calculationsRouter);
 // app.use('/api/expense', expenseRoutere);
 // app.use('/api/income', incomeRouter);
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5174;
 app.listen(PORT, () =>{
     console.log('listening on port '+ PORT);
 })

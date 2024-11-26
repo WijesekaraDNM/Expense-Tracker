@@ -54,27 +54,25 @@ code {
   0% { opacity: 0; }
   100% { opacity: 100%; }
 }
-
 @keyframes appear {
   0% { opacity: 0; }
   100% { opacity: 100%; }
 }
-
 @keyframes income_blink-shadow {
   0%, 100% {
-    box-shadow: 0px 0px 5px 0px #00DDA2;
+    text-shadow: 0px 0px 0px #00DDA2;
+    color: #00DDA2;
   }
   50% {
-    box-shadow: 0px 0px 20px 5px #00E7B1;
+    text-shadow: 0px 0px 20px #00E7B1;
+    color: #00E7B1;
   }
 }
 @keyframes expense_blink-shadow {
   0%, 100% {
-    
     box-shadow: 0px 0px 15px 5px #334050;
   }
   50% {
-    
     box-shadow: 0px 0px 15px 5px #28323e;
   }
 }
@@ -83,8 +81,7 @@ code {
   0% {
     opacity: 0;
     transform: translateY(300%);
-    background-color: transparent;
-    
+    background-color: transparent;  
   }
   100% {
     opacity: 1;
@@ -130,6 +127,7 @@ code {
     opacity: 1;
     transform: translateX(0);
     background-color:#334050;
+    backdrop-filter: blur(60px); 
   }
 }
 
@@ -157,6 +155,17 @@ code {
     opacity: 1;
     transform: translateX(0) rotate(0deg);
     border-color:#334050;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
@@ -273,11 +282,15 @@ code {
 }
 
 .table {
-  animation: opacity 3s ease-in-out forwards;
+  animation: fadeIn 3s ease-out forwards;;
   overflow-x: auto;
+  transform: translateY(0);
+
 }
 .tag {
-  animation: opacity 2s ease-in-out forwards;
+  animation: fadeIn 3s ease-out forwards;
+  transform: translateY(0);
+
 }
 
 .start{
@@ -289,10 +302,106 @@ code {
 .hide{
   opacity: 0;
 }
+.recharts-default-tooltip {
+  background-color: #E0FFEF !important;
+  border-radius: 5px;
+  padding: 15px;
+  font-size: 12px;
+  font-weight: bold;
+  color: #000;
+}
+
+.recharts-tooltip-item {
+  margin: 0;
+}
 
 .responsive-chart {
   width: 100%;
   height: auto;
+} 
+
+.custom-calendar {
+  background-color: black !important;
+  border-radius: 8px !important;
+  color: white;
+}
+
+.custom-day {
+  background-color: black !important;
+  color: white !important;
+  border-radius: 4px;
+  transition: all 0.2s ease-in-out;
+}
+
+.custom-day:hover {
+  background-color: #00DDA2 !important;
+  color: black !important;
+  font-weight: 700 ;
+}
+.custom-day:focus {
+  background-color: #00DDA2 !important;
+  color: black !important;
+  font-weight: 700 ;
+}
+
+.custom-day--in-range {
+  background-color: #00DDA2 !important;
+  color: black !important;
+  font-weight: 700 ;
+}
+
+.custom-day--selected {
+  background-color: #00DDA2 !important;
+  color: black !important;
+  font-weight: 700 ;
+}
+.custom-popper {
+  z-index: 10 !important;
+}
+
+/* Customizing the DatePicker Calendar */
+.react-datepicker {
+  background-color: transparent !important; /* Dark background */
+  color: white !important;
+  border: none !important;
+}
+
+.react-datepicker__header {
+  background-color: white !important; /* Header color */
+  opacity: 20xp;
+  color: white ;
+}
+
+.react-datepicker__day {
+  color: white;
+  background-color: #333;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+}
+
+.react-datepicker__day:hover {
+  background-color: #00DDA2;
+  color: black;
+}
+
+.react-datepicker__day--selected {
+  background-color: #00DDA2 !important;
+  color: black !important;
+}
+
+.react-datepicker__day--keyboard-selected {
+  background-color: #00DDA2 !important;
+  color: black !important;
+}
+
+@media screen and (max-width: 640px) {
+  .custom-calendar {
+    font-size: 12px;
+  }
+
+  .custom-day {
+    font-size: 10px;
+  }
 }
 
 @media (max-width: 640px) {
@@ -321,4 +430,30 @@ code {
     max-width: 180px;
     max-height: 180px;
   }
+}
+
+.left-triangle-clip {
+  clip-path: polygon(15% 0%, 0% 50%, 15% 100%, 100% 100%, 100% 0%);
+}
+.right-triangle-clip {
+  clip-path: polygon(85% 0%, 100% 50%, 85% 100%, 0% 100%, 0% 0%);
+}
+
+.typing-effect {
+  white-space: nowrap;
+  overflow: hidden;
+  border-right: 3px solid;
+  font-family: 'Sans';
+  font-size: 14px;
+}
+
+@keyframes typing {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+@keyframes blink {
+  0% { border-color: transparent; }
+  50% { border-color: white; }
+  100% { border-color: transparent; }
 }

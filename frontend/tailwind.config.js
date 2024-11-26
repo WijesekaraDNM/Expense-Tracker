@@ -6,32 +6,45 @@ export default {
     'node_modules/flowbite-react/lib/esm/**/*.js',],
   theme: {
     extend: {
+      backdropBlur: {
+        xs: '2px',
+      },
+      backdropFilter: {
+        'none': 'none',
+        'blur': 'blur(20px)',
+      },
       colors: {
         //incomeBC: '#62956A',
-        incomeBC: '#00DDA2',
+        // incomeBC: '#00DDA2',
+        // incomeHover: '#00E7B1',
+        // incomeAmount: '#048320',
+        // //incomeHover: '#5fad5f',
+        // focusColor:'#767575',
+        // //incomeBC: '#73B285',
+        // //incomeBC:'#98E0AC',
+        // //expenseBC: '#C4896F',
+        // expenseBC: '#334050',
+        // expenseHover: '#28323e',
+        // expenseAmount: '#CC0909',
+        // blurBC: '#E0FFEF',
+        //expenseHover: '#da997d',
+        //golden: '#CDA618'
+        //golden: '#B5710A',
+        //goldenHover: '#bc8736',
+        incomeBC: '#00dda2dd',
         incomeHover: '#00E7B1',
         incomeAmount: '#048320',
         //incomeHover: '#5fad5f',
         focusColor:'#767575',
-        //incomeBC: '#73B285',
-        //incomeBC:'#98E0AC',
-        //expenseBC: '#C4896F',
-        expenseBC: '#334050',
-        expenseHover: '#28323e',
+        expenseBC: '#b85f1fc7',
+        expenseHover: '#a7551bc7',
         expenseAmount: '#CC0909',
         blurBC: '#E0FFEF',
-        //expenseHover: '#da997d',
-        //golden: '#CDA618'
-        // golden: '#B5710A',
-        // goldenHover: '#bc8736',
         golden: '#B5C6C5',
         goldenHover: '#BDCDCC',
         textColor:'#FFFFF',
         subText: '#454545',
         error: '#ef4444',
-
-
-
         // incomeBC: '#1075D0 ',
         // incomeHover: '#0269C6',
         // incomeAmount: '#048320',
@@ -50,7 +63,8 @@ export default {
         'credit-card': "url('/images/creditCard.png')",
         'voucher': "url('/images/voucherNew.png')",
         'bgExpenses': "url('/images/bgExpenses-01.jpeg')",
-        'bgIncome': "url('/images/bgIncome.jpeg')"
+        'bgIncome': "url('/images/bgIncome.jpeg')",
+        'back': "url('/images/wallback.png')"
       },
       backdropBlur: {
         sm: '4px',
@@ -60,11 +74,15 @@ export default {
         '2xl': '24px',
         '3xl': '40px',
       },
-      
-      
-
     },
   },
-  plugins: [],
+  variants: {
+    extend: {
+      backdropBlur: ['hover', 'focus'],
+    }
+  },
+  plugins: [
+    require('tailwindcss-filters'),
+  ],
 }
 

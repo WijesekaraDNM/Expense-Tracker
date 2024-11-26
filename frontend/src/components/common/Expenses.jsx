@@ -208,3 +208,181 @@
 // };
 
 // export default Expense;
+
+
+
+
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+// <div className="bg-back w-full max-h-[100%] lg:h-screen lg:w-screen bg-cover">
+// <div className=" flex relative justify-center items-stretch min-h-screen w-full">
+//   <div className="lg:flex flex-col lg:fixed lg:z-50 justify-center left-0 items-center w-full lg:w-[20%] h-screen bg-expenseBC">
+//     <div className="flex lg:flex items-center justify-between py-3 px-3 w-full lg:h-[10%]">
+//       <div className="flex text-xs">
+//         <img src="/logo2.png" alt="" className="text-xs h-14" />
+//       </div>
+//       <div className="flex relative p-1 items-center">
+//         <PopupState variant="popover" popupId="demo-popup-menu">
+//           {(popupState) => (
+//             <>
+//               <Button
+//                 variant="contained"
+//                 {...bindTrigger(popupState)}
+//                 style={{
+//                   backgroundColor: '#00DDA2',
+//                   color: '#FFFFF',
+//                   boxShadow: "#B5C6C5",
+//                   padding: "1px 5px",
+//                   fontWeight: "bold",
+//                   textTransform: "none",
+//                 }}
+//               >
+//                 Hello!&nbsp;<span className="text-[#334050] text-xs">{userName}</span>
+//               </Button>
+//               <Menu {...bindMenu(popupState)}>
+//                 <MenuItem onClick={popupState.close}>Themes</MenuItem>
+//                 <MenuItem onClick={handleLogout}>Logout</MenuItem>
+//               </Menu>
+//             </>
+//           )}
+//         </PopupState>
+//       </div>
+//     </div>
+//     <div className="w-full h-[90%] flex flex-col items-center justify-center">
+//       <div className="lg:hidden pt-5 w-full flex">
+//         <Dashboard
+//           startingDate={startingDate}
+//           endingDate={endingDate}
+//           databaseUpdate={handleDatabaseUpdate}
+//         />
+//       </div>
+
+//       <div className="w-full relative pt-10 flex flex-col justify-center items-center">
+//         {startingDate && endingDate && (
+//           <div className="pb-2 income w-full">
+//             <p className="font-bold">
+//               Date Range: <span className="text-sm text-white font-light">{startingDate ? startingDate.toLocaleDateString() : 'Not selected'}</span>
+//               <span className="text-sm text-white font-light"> - {endingDate ? endingDate.toLocaleDateString() : 'Not selected'}</span>
+//             </p>
+//           </div>
+//         )}
+//         <div className="relative w-full flex items-center justify-center">
+//           <DatePicker
+//             selected={startingDate}
+//             onChange={(update) => {
+//               const [start, end] = update;
+//               setStartingDate(start);
+//               setEndingDate(end);
+//             }}
+//             startDate={startingDate}
+//             endDate={endingDate}
+//             selectsRange
+//             inline
+//             placeholderText="Select a date range"
+//             dayClassName={(date) => {
+//               if (startingDate && endingDate && date >= startingDate && date <= endingDate) {
+//                 return "custom-day custom-day--in-range";
+//               }
+//               if (date === startingDate || date === endingDate) {
+//                 return "custom-day custom-day--selected";
+//               }
+//               return "custom-day";
+//             }}
+//             popperClassName="custom-popper"
+//           />
+//         </div>
+//       </div>
+
+//       <div className="relative lg:flex hidden lg:col-span-2 w-full">
+//         <div className="md:flex md:flex-col grid grid-cols-2 w-full md:gap-3 p-5 gap-2 items-center justify-center">
+//           <div
+//             data-animation="left"
+//             className="flex bg-incomeBC w-full md:h-32 justify-center p-5 cursor-pointer items-center rounded-lg text-[2rem] text-center hover:bg-incomeHover shadow-[0_4px_9px_-4px_#9e9e9e] transition duration-150 ease-in-out"
+//             onClick={handleIncomeCard}
+//           >
+//             Income
+//           </div>
+//           <div
+//             data-animation="right"
+//             className="flex bg-expenseBC w-full md:h-32 justify-center p-5 cursor-pointer items-center rounded-lg text-[2rem] text-white text-center hover:bg-expenseHover shadow-[0_4px_9px_-4px_#9e9e9e] transition duration-150 ease-in-out"
+//             onClick={handleExpenseCard}
+//           >
+//             Expense
+//           </div>
+//         </div>
+//       </div>
+//      </div>
+//   </div>
+
+  
+//   <div className="w-full flex px-5 lg:px-0 ">
+//   <div className="lg:w-[20%] w-0 "></div>
+//   <div className="lg:w-[80%] w-full py-5 flex flex-col items-center justify-center h-auto">
+//     <div className="hidden lg:flex w-full">
+//       <Dashboard startingDate={startingDate} endingDate={endingDate} databaseUpdate = {handleDatabaseUpdate}/>
+//     </div>
+//     <div className=" relative flex lg:hidden  ">
+//         <div className=" w-full rounded-lg gap-3 runded-xl">
+//           <div className="flex px-2 py-5 md:gap-3 gap-2 items-center justify-center ">
+//             <div data-animation = "left"
+//               className="flex opacity-100 bg-incomeBC transform-translateX(0%) w-full md:h-32 justify-center p-5 cursor-pointer items-center rounded-lg text-[2rem] text-center hover:bg-incomeHover focus:bg-focusColor focus:test-gray-500 shadow-[0_4px_9px_-4px_#9e9e9e] hover:shadow-[0_8px_9px_-4px_#9e9e9e,0_4px_18px_0_#7e7d7d] focus:shadow-[0_8px_9px_-4px_#9e9e9e,0_4px_18px_0_#7e7d7d] focus:outline-none focus:ring-0 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] transition duration-150 ease-in-out "
+//               onClick={e => handleIncomeCard()}
+//             >
+//               Income
+//             </div>
+//             <div data-animation = "right"
+//               className=" flex opacity-100 bg-expenseBC transform-translateX(0%) w-full md:h-32 cursor-pointer p-5 rounded-lg text-[2rem] text-white text-center justify-center items-center hover:bg-expenseHover focus:test-gray-500 focus:bg-gray-transparent shadow-[0_4px_9px_-4px_#9e9e9e] hover:shadow-[0_8px_9px_-4px_#9e9e9e,0_4px_18px_0_#7e7d7d] focus:shadow-[0_8px_9px_-4px_#9e9e9e,0_4px_18px_0_#7e7d7d] focus:outline-none focus:ring-0 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] transition duration-150 ease-in-out "
+//               onClick={e => handleExpenseCard()}
+//             >
+//               Expense
+//             </div>
+//           </div>
+//         </div>
+//     </div>
+    
+//     <div id="transactionPage" ref={transactionPageRef}>
+//       <TransactionPage  startingDate={startingDate} endingDate={endingDate} databaseUpdate={handleDatabaseUpdate} 
+//        popupSelection={handlePopupSelection} onMaximizeToggle={handleMaximizeToggle} maxStatus={isMaximized}/>
+//     </div>
+//   </div>
+//   </div>
+// </div>
+// {isPopupWindowOpened && (
+//   <div className="fixed cursor-pointer z-50 top-0 left-0 w-full h-full flex justify-center items-center bg-black bg-opacity-80">
+//     <div className=" h-[25%] rounded-lg shadow-lg w-2/5 relative">
+//       <div className="relative flex">
+//         <TransactionForm type={popupType} Selection={popupSelection} onClose={closePopupWindow} onAddEdit={() =>{handleTransactionAddEdit()}} />
+//       </div>
+//     </div>
+//   </div>
+// )}
+// {isMaximized && (
+//   <div className="popup-container">
+//     <div className="fixed cursor-pointer z-50 top-0 left-0 w-full h-full flex justify-center items-center bg-black bg-opacity-80">
+//       <div className="py-10 px-10 my-10 h-full rounded-lg shadow-lg w-full relative">
+//         <div className="relative ">
+          
+//           <TransactionPage
+//             startingDate={startingDate}
+//             endingDate={endingDate}
+//             databaseUpdate={handleDatabaseUpdate}
+//             popupSelection={handlePopupSelection}
+//             onMaximizeToggle={handleMaximizeToggle}
+//             maxStatus={isMaximized}
+//           />
+//         </div>
+//       </div>
+//     </div>
+//   </div>
+// )}
+// </div>
+
+// );
+// };
+// export default HomePage;
+

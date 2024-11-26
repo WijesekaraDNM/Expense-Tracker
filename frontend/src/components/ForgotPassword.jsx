@@ -11,6 +11,7 @@ const ForgotPassword = () => {
     severity: ""
   });
   const [open, setOpen] = useState(false);
+  const [isLinkSent, setIsLinkSent] = useState(false);
 
   const validate = () => {
     const errors = {};
@@ -31,12 +32,13 @@ const ForgotPassword = () => {
       try {
         await sendPasswordResetEmail(email);
         const message = {
-          message: "Password reset link sent to your email!",
+          message: "Password reset link sent to your email! ",
           severity: "success"
         };
         setSnackMessage(message);
         setTimeout(() => {
           setLoading(false);
+          setIsLinkSent(true);
         }, 2000);
       } catch (error) {
         setLoading(false);
@@ -58,6 +60,11 @@ const ForgotPassword = () => {
     },
     [snackMessage]
   );
+  useEffect(() => {
+    return () => {
+      setIsLinkSent(false);
+    };
+  }, []);
 
   const handleClose = () => {
     setOpen(false);
@@ -71,43 +78,49 @@ const ForgotPassword = () => {
         </div>}
       <div className="max-w-sm mx-auto bg-white px-10 py-10 rounded-2xl shadow-[0_8px_2px_-4px_#00DDA2,0_10px_20px_0_#334050]">
         <div className="text-center mb-8">
-          <h1 className="font-bold text-3xl text-expenseBC">Forgot Password</h1>
+          <h1 className="font-bold text-xl text-expenseBC">Forgot Password</h1>
         </div>
-        <form onSubmit={handleForgotPassword}>
-          <div className="relative mt-5 mb-8">
-            <input
-              type="email"
-              value={email}
-              className={`peer m-0 block h-[58px] w-full rounded border-[1px] focus:shadow-md focus:shadow-incomeBC border-solid border-golden focus:border-expenseBC bg-transparent bg-clip-padding px-3 py-4 text-base font-normal leading-tight text-neutral-700 transition duration-200 ease-linear placeholder:text-transparent focus:pb-[0.625rem] focus:pt-[1.625rem] focus:text-neutral-700 focus:outline-none peer-focus:text-black [&:not(:placeholder-shown)]:pb-[0.625rem] [&:not(:placeholder-shown)]:pt-[1.625rem]
-                ${errors.email ? "border-error" : ""}`}
-              id="forgotEmail"
-              placeholder="name@example.com"
-              onChange={e => setEmail(e.target.value)}
-              required
-            />
-            <label
-              htmlFor="forgotEmail"
-              className="pointer-events-none absolute left-0 top-0 origin-[0_0] border border-solid border-transparent px-3 py-4 text-neutral-500 transition-[opacity,_transform] duration-200 ease-linear peer-focus:-translate-y-2 peer-focus:translate-x-[0.15rem] peer-focus:scale-[0.85] peer-focus:text-black peer-[:not(:placeholder-shown)]:-translate-y-2 peer-[:not(:placeholder-shown)]:translate-x-[0.15rem] peer-[:not(:placeholder-shown)]:scale-[0.85] motion-reduce:transition-none"
+        {isLinkSent?  <p className="text-sm font-sans">You will recieved a password reset email soon.<br/> Follow the link in the email to reset the password.</p>
+        : 
+        <div>
+          <p className="text-sm font-sans">Enter your email address and we'll send you a password reset link.</p>
+          <form onSubmit={handleForgotPassword}>
+            <div className="relative mt-5 mb-8">
+              <input
+                type="email"
+                value={email}
+                className={`peer m-0 block h-[58px] w-full rounded border-[1px] focus:shadow-md focus:shadow-incomeBC border-solid border-golden focus:border-expenseBC bg-transparent bg-clip-padding px-3 py-4 text-base font-normal leading-tight text-neutral-700 transition duration-200 ease-linear placeholder:text-transparent focus:pb-[0.625rem] focus:pt-[1.625rem] focus:text-neutral-700 focus:outline-none peer-focus:text-black [&:not(:placeholder-shown)]:pb-[0.625rem] [&:not(:placeholder-shown)]:pt-[1.625rem]
+                  ${errors.email ? "border-error" : ""}`}
+                id="forgotEmail"
+                placeholder="name@example.com"
+                onChange={e => setEmail(e.target.value)}
+                required
+              />
+              <label
+                htmlFor="forgotEmail"
+                className="pointer-events-none absolute left-0 top-0 origin-[0_0] border border-solid border-transparent px-3 py-4 text-neutral-500 transition-[opacity,_transform] duration-200 ease-linear peer-focus:-translate-y-2 peer-focus:translate-x-[0.15rem] peer-focus:scale-[0.85] peer-focus:text-black peer-[:not(:placeholder-shown)]:-translate-y-2 peer-[:not(:placeholder-shown)]:translate-x-[0.15rem] peer-[:not(:placeholder-shown)]:scale-[0.85] motion-reduce:transition-none"
+              >
+                Email address
+              </label>
+              {errors.email &&
+                <div className="text-error text-sm">
+                  {errors.email}
+                </div>}
+            </div>
+            <button
+              type="submit"
+              className=" mx-auto w-full block py-2 rounded bg-incomeBC focus:bg-goldenHover px-6 pb-2 pt-2.5 text-lg font-medium leading-normal text-white shadow-[0_4px_9px_-4px_#4D6178] transition duration-150 ease-in-out hover:shadow-[0_8px_9px_-4px_#BDCDCC,0_4px_18px_0_#B5C6C5] focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:outline-none focus:ring-0 active:bg-[gray] active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)]"
             >
-              Email address
-            </label>
-            {errors.email &&
-              <div className="text-error text-sm">
-                {errors.email}
-              </div>}
-          </div>
-          <button
-            type="submit"
-            className="my-4 block w-full rounded bg-incomeBC focus:bg-goldenHover px-6 pb-2 pt-2.5 text-lg font-medium leading-normal text-white shadow-[0_4px_9px_-4px_#4D6178] transition duration-150 ease-in-out hover:shadow-[0_8px_9px_-4px_#BDCDCC,0_4px_18px_0_#B5C6C5] focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:outline-none focus:ring-0 active:bg-[gray] active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)]"
-          >
-            Send Reset Link
-          </button>
-        </form>
+              Send Reset Link
+            </button>
+          </form>
+        </div> }
+        
         <Snackbar
           anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
           open={open}
           onClose={handleClose}
-          autoHideDuration={1800}
+          autoHideDuration={3000}
         >
           <Alert
             onClose={handleClose}

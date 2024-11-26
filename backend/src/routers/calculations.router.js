@@ -183,7 +183,7 @@ export const calculateCategoryWiseAmounts = async( userId, startingDate, endingD
 
 export const calculateTimeBasedTotals = async (userId, timeFrame) => {
   
-  const dateFormat = timeFrame === 'day' ? '%Y-%m-%d' :(timeFrame === 'month'? '%b' : '%Y');
+  const dateFormat = timeFrame === 'day' ? '%m-%d' :(timeFrame === 'month'? '%b' : '%Y');
   const titleFormat = timeFrame === 'day' ? 'Daily Transaction Forecast' :(timeFrame === 'month'? 'Monthly Transaction Forecast' : 'Annual Transaction Forecast');
   const pipeline = [
     { $match: { user: userId } },

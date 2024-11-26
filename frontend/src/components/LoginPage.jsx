@@ -96,7 +96,7 @@ const LoginPage = () => {
             )}
           </div>
 
-          <div className="relative mt-5 mb-8">
+          <div className="relative mt-5 mb-4 sm:mb-8">
             <input
               type="password"
               value={password}
@@ -125,18 +125,18 @@ const LoginPage = () => {
           <button
             onClick={handleLogin}
             type="button"
-            className="my-2 block w-full rounded bg-incomeBC px-6 pb-2 pt-2.5 text-lg font-medium  leading-normal text-white shadow-[0_4px_9px_-4px_#4D6178] transition hover:shadow-[0_8px_9px_-4px_#BDCDCC,0_4px_18px_0_#B5C6C5] focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:outline-none focus:ring-0 active:bg-[gray] active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)]transition duration-150 ease-in-out active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)]"
+            className="my-2 block w-full rounded bg-incomeBC sm:px-6 px-3 pb-2 pt-2.5 text-lg font-medium  leading-normal text-white shadow-[0_4px_9px_-4px_#4D6178] transition hover:shadow-[0_8px_9px_-4px_#BDCDCC,0_4px_18px_0_#B5C6C5] focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:outline-none focus:ring-0 active:bg-[gray] active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)]transition duration-150 ease-in-out active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)]"
           >
             Sign In
           </button>
           
           <h4 className="text-center my-4 font-semibold">Or</h4>
 
-          <button className="px-4 py-2 my-5 border flex items-center justify-center gap-2  w-full rounded-md text-slate-700  hover:border-expenseBC border-goldenHover hover:text-slate-900  hover:shadow-lg transition duration-150">
+          <button className="lg:px-4 px-2 py-2 my-2  md:my-5 border flex items-center justify-center gap-2  w-full rounded-md text-slate-700  hover:border-expenseBC border-goldenHover hover:text-slate-900  hover:shadow-lg transition duration-150">
             <FcGoogle className=" w-5 h-5" />
             <span>Login with Google</span>
           </button>
-          <div className="flex gap-3 ">
+          <div className="flex md:gap-3 gap-1 ">
             <p className="justify-start text-sm">Still not registered? </p>
             <p className="items-end text-md hover:underline text-incomeBC font-semibold hover:text-expenseBC">
               <Link to="/register">Register</Link>

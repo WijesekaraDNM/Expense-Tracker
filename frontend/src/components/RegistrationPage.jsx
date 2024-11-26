@@ -18,6 +18,11 @@ const Registration = () => {
     if (!userName) {
       errors.userName = "User Name is required";
     }
+    else if (userName.length < 4 || userName.length > 20) {
+      errors.userName = "Username must be between 4 and 20 characters.";
+    } else if (!/^[a-zA-Z0-9_-]+$/.test(userName)) {
+      errors.userName = "Username can only contain letters, numbers, underscores, and hyphens.";
+    };
 
     if (!email) {
       errors.email = "Email is required";
@@ -27,8 +32,8 @@ const Registration = () => {
 
     if (!password) {
       errors.password = "Password is required";
-    } else if (password.length < 6) {
-      errors.password = "Password must be at least 6 characters";
+    } else if (/^(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{6,}$/.test(password)) {
+      errors.password = "Password must be at least 6 characters long and include a special character";
     }
 
     // if (!prefferedSequence) {
