@@ -1,5 +1,5 @@
 import axios from "axios";
-axios.defaults.baseURL = 'http://localhost:5000';
+axios.defaults.baseURL = 'http://localhost:5174';
 
 export const getTransactions = async (userId, dates) => {
     const {data} = await axios.post('/api/transactions/getAll/'+ userId, dates);
