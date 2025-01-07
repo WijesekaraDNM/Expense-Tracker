@@ -321,32 +321,32 @@ code {
 } 
 
 .custom-calendar {
-  background-color: black !important;
+  background-color: #BAB9E0 !important;
   border-radius: 8px !important;
   color: white;
 }
 
 .custom-day {
-  background-color: black !important;
+  background-color: #BAB9E0 !important;
   color: white !important;
   border-radius: 4px;
   transition: all 0.2s ease-in-out;
 }
 
 .custom-day:hover {
-  background-color: #00DDA2 !important;
-  color: black !important;
+  background-color: #4B71F0 !important;
+  color: white !important;
   font-weight: 700 ;
 }
 .custom-day:focus {
-  background-color: #00DDA2 !important;
-  color: black !important;
+  background-color: #4B71F0 !important;
+  color: white !important;
   font-weight: 700 ;
 }
 
 .custom-day--in-range {
-  background-color: #00DDA2 !important;
-  color: black !important;
+  background-color: #4B71F0 !important;
+  color: white !important;
   font-weight: 700 ;
 }
 
@@ -384,7 +384,7 @@ code {
   color: black;
 }
 
-.react-datepicker__day--selected {
+/* .react-datepicker__day--selected {
   background-color: #00DDA2 !important;
   color: black !important;
 }
@@ -392,7 +392,7 @@ code {
 .react-datepicker__day--keyboard-selected {
   background-color: #00DDA2 !important;
   color: black !important;
-}
+} */
 
 @media screen and (max-width: 640px) {
   .custom-calendar {

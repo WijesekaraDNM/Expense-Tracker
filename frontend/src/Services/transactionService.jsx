@@ -6,6 +6,7 @@ export const getTransactions = async (userId, dates) => {
     console.log("Added transactions in the database", data);
     return data;
 }
+
 export const addTransaction = async (newData) => {
     // const {data} = await axios.post('/api/transactions/addTransaction', newData);
     // console.log("Transaction is created", data);
@@ -88,6 +89,17 @@ export const calculateCategoricalAmounts = async (userId, dates) => {
 export const dailyForcastOfIncomeExpense = async (userId) => {
     try {
         const {data} = await axios.get('/api/calculations/totals/daily/' + userId);
+        console.log("Daily Income Expense Amounts:", data);
+        return data;
+    } catch (error) {
+        console.error("Error rendering calculations:", error.response ? error.response.data : error.message);
+        throw error;
+    }
+}
+
+export const dateRangetBasedIncomeExpense = async (userId, dates, dateRange) => {
+    try {
+        const {data} = await axios.get('/api/calculations/totals/range/' + userId, dates, dateRange);
         console.log("Daily Income Expense Amounts:", data);
         return data;
     } catch (error) {

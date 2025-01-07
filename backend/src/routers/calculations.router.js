@@ -69,6 +69,34 @@ router.get(
   })
 );
 
+router.get(
+  "/totals/range/:userId",
+  handler(async (req, res) => {
+    const { userId } = req.params;
+    const {startingDate, endingDate} = req.params;
+    const {dateRange} = req.params;
+    try {
+      const daily = await calculateTimeBasedTotals(userId, "day");
+      const monthly = await calculateTimeBasedTotals(userId, "month");
+      const annually = await calculateTimeBasedTotals(userId, "year");
+      console.log("Daily Amounts:", daily.title);
+      console.log("Monthly Amounts:", monthly);
+      console.log("Annually Amounts:", annually);
+      res.json({
+        daily:daily, 
+        monthly:monthly, 
+        annually:annually
+        }
+     );
+    } catch (error) {
+      console.error("Error calculating daily totals:", error);
+      res
+        .status(INTERNAL_SERVER_ERROR)
+        .json({ error: "Error calculating daily totals" });
+    }
+  })
+);
+
 export const calculateTotalIncomeAndExpense = async (userId, startingDate, endingDate) => {
 
   let dateFilter = {};
@@ -213,6 +241,7 @@ export const calculateTimeBasedTotals = async (userId, timeFrame) => {
     {
       $project: {
         _id: 0,
+        rawDate: "$_id." + timeFrame, 
         date: {
           $dateToString: { format: dateFormat, date: "$_id." + timeFrame }
         },
@@ -222,7 +251,7 @@ export const calculateTimeBasedTotals = async (userId, timeFrame) => {
         netIncome: 1
       }
     },
-    { $sort: { date: 1 } }
+    { $sort: { rawDate: 1 } }
   ];
 
   try {

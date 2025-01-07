@@ -74,11 +74,11 @@ const ForgotPassword = () => {
     <div className="container mx-auto p-5 pt-20 mt-20 md:p-0">
       {loading &&
         <div className="fixed inset-0 flex items-center justify-center bg-gray-100 bg-opacity-75 z-50">
-          <div className="loader ease-linear rounded-full border-8 border-t-8 border-incomeBC h-16 w-16" />
+          <div className="loader ease-linear rounded-full border-8 border-t-8 h-16 w-16" />
         </div>}
-      <div className="max-w-sm mx-auto bg-white px-10 py-10 rounded-2xl shadow-[0_8px_2px_-4px_#00DDA2,0_10px_20px_0_#334050]">
+      <div className="max-w-sm mx-auto bg-white px-10 py-10 rounded-2xl border shadow">
         <div className="text-center mb-8">
-          <h1 className="font-bold text-xl text-expenseBC">Forgot Password</h1>
+          <h1 className="font-bold text-xl text-[#14bbb0]">Forgot Password</h1>
         </div>
         {isLinkSent?  <p className="text-sm font-sans">You will recieved a password reset email soon.<br/> Follow the link in the email to reset the password.</p>
         : 
@@ -89,7 +89,7 @@ const ForgotPassword = () => {
               <input
                 type="email"
                 value={email}
-                className={`peer m-0 block h-[58px] w-full rounded border-[1px] focus:shadow-md focus:shadow-incomeBC border-solid border-golden focus:border-expenseBC bg-transparent bg-clip-padding px-3 py-4 text-base font-normal leading-tight text-neutral-700 transition duration-200 ease-linear placeholder:text-transparent focus:pb-[0.625rem] focus:pt-[1.625rem] focus:text-neutral-700 focus:outline-none peer-focus:text-black [&:not(:placeholder-shown)]:pb-[0.625rem] [&:not(:placeholder-shown)]:pt-[1.625rem]
+                className={`peer m-0 block h-[58px] w-full rounded border-[1px] focus:shadow border-solid border-golden focus:border-[#3e67f0] bg-transparent bg-clip-padding px-3 py-4 text-base font-normal leading-tight text-neutral-700 placeholder:text-transparent focus:pb-[0.625rem] focus:pt-[1.625rem] focus:text-neutral-700 focus:outline-none peer-focus:text-black [&:not(:placeholder-shown)]:pb-[0.625rem] [&:not(:placeholder-shown)]:pt-[1.625rem]
                   ${errors.email ? "border-error" : ""}`}
                 id="forgotEmail"
                 placeholder="name@example.com"
@@ -109,7 +109,7 @@ const ForgotPassword = () => {
             </div>
             <button
               type="submit"
-              className=" mx-auto w-full block py-2 rounded bg-incomeBC focus:bg-goldenHover px-6 pb-2 pt-2.5 text-lg font-medium leading-normal text-white shadow-[0_4px_9px_-4px_#4D6178] transition duration-150 ease-in-out hover:shadow-[0_8px_9px_-4px_#BDCDCC,0_4px_18px_0_#B5C6C5] focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:outline-none focus:ring-0 active:bg-[gray] active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)]"
+              className=" mx-auto w-full block py-2 rounded bg-[#4B71F0] hover:bg-[#3e67f0] focus:bg-goldenHover px-6 pb-2 pt-2.5 text-lg font-medium leading-normal text-white hover:shadow focus:shadow focus:outline-none focus:ring-0 active:bg-[gray] active:shadow"
             >
               Send Reset Link
             </button>
