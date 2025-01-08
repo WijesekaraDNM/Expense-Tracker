@@ -18,8 +18,6 @@ function App() {
           <Route path= "/" element={<LoginPage/>}/>
           <Route path="/forgot-password" element={<ForgotPassword/>}/>
           <Route path= "/reset-password/:token" element={<ResetPasswordPage/>}/>
-          {/* <Route path="/home" element={<HomePage/>}/>
-          <Route path="Form" element={<TransactionForm/>}/> */}
           <Route path="/register" element={<Registration/>}/>
           <Route path="/home" element={
             <PrivateRoute>

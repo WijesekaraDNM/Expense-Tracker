@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Snackbar, Alert } from '@mui/material';
 import { FcGoogle } from "react-icons/fc";
 import { useAuth } from "../hooks/useAuth";
+import { FaEye, FaEyeSlash } from "react-icons/fa6";
 
 const LoginPage = () => {
   const { login } = useAuth();
@@ -15,6 +16,7 @@ const LoginPage = () => {
   const [open, setOpen] = useState(false);
   const [errors, setErrors] = useState({}); 
   const [loading, setLoading] = useState(false);
+  const [passwordVisible, setPasswordVisible] = useState(false);
   const [snackMessage, setSnackMessage] = useState({message:"", severity:""});
 
   const navigate = useNavigate();
@@ -73,10 +75,6 @@ const LoginPage = () => {
       default:
         break;  
     };
-    // if (!prefferedSequence) {
-    //   errors.prefferedSequence = "Preferred Sequence is required";
-    // }
-  
     return errors;
   };
 
@@ -175,7 +173,7 @@ const LoginPage = () => {
 
           <div className="relative mt-5 mb-4 sm:mb-8">
             <input
-              type="password"
+              type={passwordVisible? "text": "password"}
               value={formData.password}
               className={`peer m-0 block h-[58px] border-[1px] focus:shadow border-solid border-golden w-full rounded bg-transparent bg-clip-padding px-3 py-4 text-base font-normal leading-tight text-neutral-700 placeholder:text-transparent focus:border-[#4B71F0] focus:pb-[0.625rem] focus:pt-[1.625rem] focus:text-neutral-700 focus:outline-none peer-focus:text-black [&:not(:placeholder-shown)]:pb-[0.625rem] [&:not(:placeholder-shown)]:pt-[1.625rem]
                 ${errors.password? "border-error": ""}`}
@@ -190,6 +188,13 @@ const LoginPage = () => {
             >
               Password
             </label>
+            <button
+              type="button"
+              onClick={()=>setPasswordVisible(!passwordVisible)}
+              className="absolute top-7 right-3 text-gray-600"
+            >
+              {passwordVisible ? <FaEyeSlash /> : <FaEye />}
+            </button>
             {errors.password && (
               <div className="text-error text-sm">{errors.password}</div>
             )}

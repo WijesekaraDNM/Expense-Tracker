@@ -1,92 +1,3 @@
-// import React, { useState, useRef, useEffect } from "react";
-// import { useAuth } from "../hooks/useAuth";
-// import TransactionPage from "./transactionPage";
-// import Dashboard from "./dashboard";
-// import Button from '@mui/material/Button';
-// import Menu from '@mui/material/Menu';
-// import MenuItem from '@mui/material/MenuItem';
-// import PopupState, { bindTrigger, bindMenu } from 'material-ui-popup-state';
-
-// const HomePage = () => {
-//   const { logout } = useAuth();
-//   const [startingDate, setStartingDate] = useState();
-//   const [endingDate, setEndingDate] = useState();
-//   const transactionPageRef = useRef(null);
-//   const [refreshKey, setRefreshKey] = useState(0);
-//   const [databaseUpdate,setDatabaseUpdate] = useState(false);
-//   const [isAuthenticated, setIsAuthenticated] = useState(false);
-//   const { userId } = useAuth();
-//   const { userName } = useAuth();
-
-
-//   const handleLogout = async e => {
-//     e.preventDefault();
-//     await logout();
-//   };
-
-//   const handleScrollToTransactionPage = () => {
-
-//     if (transactionPageRef.current) {
-//       transactionPageRef.current.scrollIntoView({
-//         behavior: 'smooth', // for smooth scrolling
-//         block: 'start'      // scroll to the top of the element
-//       });
-//     }
-//   };
-
-//   const handleDatabaseUpdate = () => {
-//     //setDatabaseUpdate(prevState => !prevState);
-//     setDatabaseUpdate(prevState => !prevState);
-//     console.log("HomaPage transactionadd:", databaseUpdate);
-//   };
-
-//   return (
-//     <>
-//       <div className="flex flex-col w-full h-full bg-white mb-2 pb-2">
-//         <div className="w-[100%] lg:w-[70%] self-end relative rounded-l-full end-0 px-5 py-3 flex items-center justify-between mt-3 mb-2 bg-expenseBC">
-//           <div className="flex ">
-//             <img src="/logo2.png" alt="" className=" md:h-16 left-0 h-12 " />
-//           </div>
-//           <div className="flex gap-2">
-//             <button onClick={handleScrollToTransactionPage} className="md:flex justify-center rounded items-center hidden  w-full h-8 text-white text-lg p-2 focus:outline-none focus:ring-0 active:shadow-[0_8px_9px_-4px_#BDCDCC,0_4px_18px_0_#B5C6C5] transition duration-150 ease-in-out "
-//             >
-//               Add Transactions 
-//             </button> 
-//             <div className="flex relative items-center">
-//               {/* <div className=" w-full text-md text-gray-50">Hello {userName}!</div>
-//               <button
-//               onClick={handleLogout}
-//               className="flex justify-center rounded items-center w-36 h-8 text-white focus:outline focus:shadow-incomeBC p-3 focus:test-gray-500 bg-transparent border border-solid border-golden focus:border-white focus:bg-gray-transparent shadow-[0_4px_9px_-4px_#9e9e9e] hover:shadow-[0_8px_9px_-4px_#9e9e9e,0_4px_18px_0_#7e7d7d] hover:shadow-incomeBC focus:shadow-[0_8px_9px_-4px_#9e9e9e,0_4px_18px_0_#7e7d7d] focus:outline-none focus:ring-0 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] transition duration-150 ease-in-out "
-//               >
-//                 logout
-//               </button> */}
-//                <PopupState variant="popover" popupId="demo-popup-menu">
-//                   {(popupState) => (
-//                     <React.Fragment>
-//                       <Button variant="contained"  {...bindTrigger(popupState)} sx={{backgroundColor: '#00DDA2', color: '#FFFFF', '&:hover': {backgroundColor: '#00E7B1', }, boxShadow: "#B5C6C5", padding:{sm:"2px 5px", md:"4px 15px"}, fontWeight:"bold", textTransform: "none" }}>
-//                         Hello!&nbsp;<span className="text-[#334050]">{' '} {userName}</span>
-//                       </Button>
-//                       <Menu {...bindMenu(popupState)}>
-//                         <MenuItem onClick={handleScrollToTransactionPage}>Transactions</MenuItem>
-//                         <MenuItem onClick={popupState.close}>Themes</MenuItem>
-//                         <MenuItem onClick={handleLogout}>Logout</MenuItem>
-//                       </Menu>
-//                     </React.Fragment>
-//                   )}
-//                 </PopupState>
-//             </div>
-//           </div>
-//         </div>
-//         <Dashboard setLocalStartingDate={setStartingDate} setLocalEndingDate={setEndingDate} databaseUpdate = {handleDatabaseUpdate}/>
-//       </div>
-//       <div className="bg-white" id="transactionPage" ref={transactionPageRef}>
-//         <TransactionPage  startingDate={startingDate} endingDate={endingDate} databaseUpdate={handleDatabaseUpdate}/>
-//       </div>
-//     </>
-    
-//   );
-// };
-// export default HomePage;
 
 import React, { useState, useRef, useEffect, useReducer } from "react";
 import { useAuth } from "../hooks/useAuth";
@@ -256,14 +167,7 @@ const HomePage = () => {
     setIsMaximized(!isMaximized);
     console.log("homeToggle:",isMaximized);
   };
-  // useEffect(() => {
-  //   if (isDatabaseUpdated) {
-  //     databaseUpdate();
-  //     // Reset istransactionAddEdit after operation
-  //   }
-  //   console.log("transactionPage added1:", isDatabaseUpdated);
-  //   setIsDatabaseUpdated(false);
-  // }, [isMaximized]);
+
   const handleDateRange = (e) => {
     const selectedRange = e.target.value;
     setSelectedRange(selectedRange);
@@ -410,8 +314,6 @@ const HomePage = () => {
         </PopupState>
       </div>
 
-      {/*Date picker for mobile sizes */}
-      {/* Date Picker Section */}
 <div className="flex flex-col items-center mt-2 px-5 w-full lg:hidden">
   <div className="relative rounded-3xl bg-transparent gap-1 px-5 w-full">
     <p className="text-md font-semibold text-white">Select range</p>

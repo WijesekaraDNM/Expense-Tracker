@@ -4,8 +4,6 @@ import { useAuth } from '../../hooks/useAuth';
 
 const PrivateRoute = ({ children }) => {
   const { isAuthenticated, loading } = useAuth();
-
-  //return isAuthenticated ? children : <Navigate to="/" />;
   
   if(loading){
     return (
