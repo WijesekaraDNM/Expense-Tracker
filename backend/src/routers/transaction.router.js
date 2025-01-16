@@ -4,9 +4,11 @@ import handler from 'express-async-handler';
 import { TransactionModel } from '../models/transactions.model.js';
 import { CATEGORIES } from '../config/categories.js';
 import { UserModel } from '../models/user.model.js';
-
+import axios from 'axios';
 
 const router = Router();
+const BOC_CLIENT_ID = process.env.BOC_CLIENT_ID;
+const BOC_CLIENT_SECRET = process.env.BOC_CLIENT_SECRET;
 
 router.post('/addTransaction', handler(async (req, res) => {
 
@@ -97,15 +99,6 @@ router.get('/categories/:userId', handler( async(req,res) => {
     console.log("founded User in cate:", currentUser);
     const incomeCategories=[...CATEGORIES.income,...currentUser.customIncomeCategories];
     const expenseCategories=[...CATEGORIES.expense,...currentUser.customExpenseCategories];
-
-    // if (Array.isArray(currentUser.customIncomeCategories)) {
-    //     incomeCategories.push(...currentUser.customIncomeCategories);
-    // }
-
-    // if (Array.isArray(currentUser.customExpenseCategories)) {
-    //     expenseCategories.push(...currentUser.customExpenseCategories);
-    // }
-    //res.json(categories);
     res.json({ income: incomeCategories, expense: expenseCategories });
     
 }));
@@ -146,12 +139,6 @@ const generateTransactionID = async (type) =>{
 
 const addToCustomCategories = async (userId, category, type) => {
     const user = await UserModel.findOne({userId:userId});
-    // if (type === 'Income' && !user.customIncomeCategories.includes(category) && ![CATEGORIES.income].includes(category)) {
-    //   user.customIncomeCategories.push(category);
-    // } else if (type === 'Expense' && !user.customExpenseCategories.includes(category) && ![CATEGORIES.expense].includes(category)) {
-    //   user.customExpenseCategories.push(category);
-    // }
-    // await user.save();
     console.log("categoru User:",  type);
     console.log("categoru:", category);
     if (!user) {
@@ -174,6 +161,62 @@ const addToCustomCategories = async (userId, category, type) => {
         }
     }
     await user.save();
-  };
+};
+
+// Function to get the OAuth2 token
+const getOAuthToken = async () => {
+    const response = await axios.post('https://api.boc.lk/oauth/token', {
+      client_id: BOC_CLIENT_ID,
+      client_secret: BOC_CLIENT_SECRET,
+      grant_type: 'client_credentials',
+    }, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+  
+    return response.data.access_token;
+};
+// Endpoint to get account statement (transactions)
+router.get('/boc/transactions/:account_id', async (req, res) => {
+    const { accountId } = req.params;
+  
+    try {
+      const token = await getOAuthToken();
+      const response = await axios.get(`${BOC_BASE_URL}/v1/accounts/${accountId}/transactions`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const {transaction_id, date, description, amount, type, account_id} = response.data.transactions;
+       const newID = await generateTransactionID(type); 
+    
+        const newTransaction = {
+            transactionId: newID,
+            user: user,
+            name: transaction_id,
+            type,
+            date,
+            category,
+            amount,
+            note: description
+};
+
+    try{
+        const result = await TransactionModel.create(newTransaction);
+        const result1 = await addToCustomCategories(user, category, type);
+        console.log("result1: ", result1);
+        res.send(result);
+    } catch(error){
+        console.error("Error creating transaction:", error);
+        res.status(BAD_REQUEST).send("transaction create error");
+    }
+  
+      res.json(response.data);
+    } catch (error) {
+      console.error('Error fetching transactions:', error);
+      res.status(500).send('Error fetching transactions');
+    }
+  });
 
 export default router;

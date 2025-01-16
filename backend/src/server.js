@@ -15,15 +15,13 @@ app.use(express.json());
 
 app.use(cors({
     credentials:true,
-    origin: ['http://localhost:5174', 'http://localhost:3000'],
+    origin: ["http://localhost:3000", "http://localhost:5174"],
     })
 );
 
 app.use('/api/users',userRouter);
 app.use('/api/transactions', transactionsRouter);
 app.use('/api/calculations', calculationsRouter);
-// app.use('/api/expense', expenseRoutere);
-// app.use('/api/income', incomeRouter);
 
 const PORT = process.env.PORT || 5174;
 app.listen(PORT, () =>{

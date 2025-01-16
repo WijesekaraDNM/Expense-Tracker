@@ -7,10 +7,133 @@ import bcrypt from 'bcrypt';
 import crypto from 'crypto';
 import nodemailer from 'nodemailer';
 import dotenv from 'dotenv';
+import { OAuth2Client } from "google-auth-library";
+import { AccountModel } from "../models/account.model.js";
+import axios from 'axios';
+
 
 dotenv.config();
 const PASSWORD_HASH_SALT_ROUNDS = 10;
 const router = Router()
+
+const CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
+const BOC_CLIENT_ID = process.env.BOC_CLIENT_ID;
+const BOC_CLIENT_SECRET = process.env.BOC_CLIENT_SECRET;
+const JWT_SECRET = process.env.JWT_SECRET;
+const BOC_BASE_URL = "https://sandbox-apis.bankofcyprus.com/df-boc-org-sb/sb/psd2"; 
+
+console.log("Backend Google Client ID:", CLIENT_ID);
+const client = new OAuth2Client(CLIENT_ID);
+
+const authenticateToken = (req, res, next) => {
+  const token = req.headers.authorization?.split(" ")[1];
+  if (!token) return res.status(401).json({ message: "Access denied" });
+
+  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+    if (err) return res.status(403).json({ message: "Invalid token" });
+    req.user = user;
+    next();
+  });
+};
+
+// Function to get the OAuth2 token
+const getOAuthToken = async () => {
+  try {
+    const response = await axios.post(`${BOC_BASE_URL}/oauth2/token`, 
+      `client_id=${BOC_CLIENT_ID}&client_secret=${BOC_CLIENT_SECRET}&grant_type=client_credentials`, 
+      {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+      }
+    );
+    return response.data.access_token;
+  } catch (error) {
+    console.error('Error retrieving OAuth token:', error.message);
+    throw new Error('Failed to retrieve OAuth token');
+  }
+};
+
+// Endpoint to get account details
+router.get('/boc/accounts', async (req, res) => {
+  
+  try {
+    const token = await getOAuthToken();
+    const response = await axios.get(`${BOC_BASE_URL}/v1/accounts`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.data.accounts || !Array.isArray(response.data.accounts)) {
+      return res.status(500).send('Invalid API response structure');
+    }
+
+    const createdAccounts = [];
+    for (const accountData of response.data.accounts) {
+      const { accountId, account_name, balance, type, iban } = accountData;
+
+      const existingAccount = await AccountModel.findOne({ account_id: accountId });
+      if (existingAccount) {
+        console.log(`Account with ID ${accountId} already exists.`);
+        continue;
+      }
+
+      const newAccount = {
+        account_id: accountId,
+        account_name,
+        balance,
+        type,
+        iban,
+      };
+
+      const result = await AccountModel.create(newAccount);
+      createdAccounts.push(result);
+    }
+
+    res.status(200).json({ message: "Accounts fetched and saved successfully", createdAccounts });
+  } catch (error) {
+    console.error('Error fetching account details:', error);
+    res.status(500).send('Error fetching account details');
+  }
+});
+
+// Google Login
+router.post("/google-login", handler( async (req, res) => {
+  const { token } = req.body;
+  try {
+   
+    const ticket = await client.verifyIdToken({
+      idToken: token,
+      audience: CLIENT_ID,
+    });
+    const payload = ticket.getPayload();
+    
+    // Check if user exists in the database
+    let user = await UserModel.findOne({ email: payload.email });
+    
+
+    // If user doesn't exist, create a new one
+    if (!user) {
+      const newUser = {
+        userId: (await generateID()).toString(),
+        userName: payload.name,
+        email: payload.email,
+        password: crypto.randomBytes(16).toString("hex"), 
+      };
+      user = await UserModel.create(newUser);
+    }
+
+    res.send(generateTokenResponse(user));
+
+  } catch (error) {
+    console.error("Token verification failed:", error);
+    res.status(400).json({ message: "Invalid Google token" });
+  }
+})
+);
+
 
 router.post('/login', handler(async (req, res) => {
     const { email, password } = req.body;
@@ -34,7 +157,7 @@ router.post('/register',handler(async (req, res) => {
         const user = await UserModel.findOne({ email });
 
         if (user) {
-            res.status(BAD_REQUEST).send('User name already taken, please enter another!');
+            res.status(BAD_REQUEST).send('Email already in use, please enter another!');
             return;
         }
 

@@ -167,15 +167,6 @@ export const calculateCategoryWiseAmounts = async( userId, startingDate, endingD
     ...CATEGORIES.expense,
     ...currentUser.customExpenseCategories
   ];
-
-  // if (Array.isArray(currentUser.customIncomeCategories)) {
-  //     incomeCategories.push(...currentUser.customIncomeCategories);
-  // }
-
-  // if (Array.isArray(currentUser.customExpenseCategories)) {
-  //     expenseCategories.push(...currentUser.customExpenseCategories);
-  // }
-
   const categoryWiseIncome = incomeCategories.map(category => ({
     category,
     amount: 0
