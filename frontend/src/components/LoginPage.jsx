@@ -4,9 +4,12 @@ import { Snackbar, Alert } from '@mui/material';
 import { FcGoogle } from "react-icons/fc";
 import { useAuth } from "../hooks/useAuth";
 import { FaEye, FaEyeSlash } from "react-icons/fa6";
+import { gapi } from "gapi-script";
+import { GoogleLogin } from "@react-oauth/google";
+import { googleLoginTo } from '../Services/userService';
 
 const LoginPage = () => {
-  const { login } = useAuth();
+  const { login, googleLogin } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [formData, setFormData] = useState({
@@ -18,8 +21,47 @@ const LoginPage = () => {
   const [loading, setLoading] = useState(false);
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [snackMessage, setSnackMessage] = useState({message:"", severity:""});
-
   const navigate = useNavigate();
+  const CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID;
+ //console.log("GOOGLE_CLIENT_ID :", CLIENT_ID);
+  useEffect(() => {
+    const initClient = () => {
+      gapi.client.init({
+        clientId: CLIENT_ID, // Replace with your Google Client ID
+        scope: "email profile",
+      });
+    };
+    gapi.load("client:auth2", initClient);
+  }, []);
+
+  const handleSuccess = async(response) => {
+    //console.log("Google Login Success:", response);
+    if (!response?.credential) {
+      console.error("Google login failed: No credential received.");
+      setSnackMessage({ message: "Google login failed.", severity: "error" });
+      return;
+    };
+
+    const googleToken = response.credential;
+    // console.log("Sending data in useAuth :", data);
+    await googleLogin(googleToken)
+    .then((response) => {
+      
+      setSnackMessage({ message: "Login Successful!", severity: "success" });
+      setTimeout(() => navigate("/home"), 2000);
+    })
+    .catch((error) => {
+      console.error("Google login error:", error);
+      setSnackMessage({ message: "Google login failed.", severity: "error" });
+    });
+    
+  };
+
+  const handleFailure = (error) => {
+    //console.error("Google Login Failed:", error);
+    alert("Google login failed. Please try again.");
+  };
+
   const handleClose = () => {
     setOpen(false);
   }
@@ -53,7 +95,7 @@ const LoginPage = () => {
     const errors = {};
     switch(name){
       case "email":  
-        if (!name) {
+        if (!value) {
           errors.email = "Email is required";
         } else {
           const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/; // General email syntax
@@ -66,7 +108,7 @@ const LoginPage = () => {
         };
         break;
       case "password":  
-        if (!name) {
+        if (!value) {
           errors.password = "Password is required";
         } else if (!/^(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{6,}$/.test(value)) {
           errors.password = "Password must be at least 6 characters long and include a special character";
@@ -98,22 +140,17 @@ const LoginPage = () => {
     if (Object.keys(errors).length > 0) {
       let message = {message:"Please correct the highlighted errors.", severity:"error"};
       setSnackMessage(message);
-      console.log("Validation Errors:", errors);
+      //console.log("Validation Errors:", errors);
       return;
     }
     setLoading(true);
     try {
       const response = await login(formData);
-      console.log("login jwt token : ", response);
-      //localStorage.setItem('token', result.token);
       setSnackMessage({ message: "Login Successful!", severity: "success" });
       setTimeout(() => {
         navigate("/home");
       }, 2000);
     } catch (error) {
-      console.error("Login error:", error);
-
-      // Extract and display error message
       const errorMessage =
         error.response?.data?.message || // API-provided error message
         "Login failed! Please check your credentials."; // Default fallback message
@@ -215,10 +252,14 @@ const LoginPage = () => {
           
           <h4 className="text-center my-4 font-semibold">Or</h4>
 
-          <button className="lg:px-4 px-2 py-2 my-2  md:my-5 border flex items-center justify-center gap-2  w-full rounded-md text-slate-700  hover:border-[#14bbb0] border-goldenHover hover:text-slate-900  hover:shadow">
-            <FcGoogle className=" w-5 h-5" />
-            <span>Login with Google</span>
-          </button>
+          <GoogleLogin
+            className="lg:px-4 px-2 py-2 my-2  md:my-5 border flex items-center justify-center gap-2  w-full rounded-md text-slate-700  hover:border-[#14bbb0] border-goldenHover hover:text-slate-900  hover:shadow"
+            clientId="396443551248-3os8ou634p30ft44cbq9mclbiv0l0i4t.apps.googleusercontent.com" // Replace with your Client ID
+            buttonText="Sign in with Google"
+            onSuccess={handleSuccess}
+            onFailure={handleFailure}
+            cookiePolicy={"single_host_origin"}
+          />
           <div className="flex md:gap-3 gap-1 ">
             <p className="justify-start text-sm">Still not registered? </p>
             <p className="items-end text-md hover:underline text-[#14bbb0] font-semibold hover:shadow">

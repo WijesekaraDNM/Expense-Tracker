@@ -2,20 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
-/* 
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+.chart-container {
+  width: 100%; /* or a fixed width like 400px */
+  height: 80%;
+  min-width: 300px;
+  min-height: 300px;
 }
-
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
-} */
 
 @layer base {
   @keyframes slideIn {
@@ -383,16 +375,6 @@ code {
   background-color: #00DDA2;
   color: black;
 }
-
-/* .react-datepicker__day--selected {
-  background-color: #00DDA2 !important;
-  color: black !important;
-}
-
-.react-datepicker__day--keyboard-selected {
-  background-color: #00DDA2 !important;
-  color: black !important;
-} */
 
 @media screen and (max-width: 640px) {
   .custom-calendar {

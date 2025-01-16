@@ -18,6 +18,7 @@ import { FaXmark } from "react-icons/fa6";
 import { deleteTransaction } from "../Services/transactionService";
 import { GiPayMoney } from "react-icons/gi";
 import { GiReceiveMoney } from "react-icons/gi";
+import { getBOCAccounts } from "../Services/userService";
 
 const initialState = { transactionItems: [] };
 const reducer = (state, action) => {
@@ -62,9 +63,23 @@ const HomePage = () => {
   const [selectedValue, setSelectedValue] = useState(null);
   const [displayText, setDisplayText] = useState("");
   const [isChartVisible, setIsChartVisible] = useState(false);
+  const [bocAccounts, setBocAccounts] = useState();
   const text = "Select a Date Range & get more Information"; // Your desired text
 
   useEffect(() => {
+    const fetchAccounts = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        console.log("Token :", token);
+        const response = await getBOCAccounts(token);
+        console.log("Account response in home :", response);
+        setBocAccounts(response.data.accounts); // Adjust as per your response structure
+      } catch (error) {
+        console.error("Error fetching BOC accounts:", error);
+      }
+    };
+  
+    fetchAccounts();
     let index = 0;
     const interval = setInterval(() => {
       setDisplayText((prev) => prev + text[index]);
@@ -94,18 +109,16 @@ const HomePage = () => {
   };
 
   const handleDatabaseUpdate = () => {
-    //setDatabaseUpdate(prevState => !prevState);
     if(isDatabaseUpdated){
       setDatabaseUpdate(prevState => !prevState);
     };
     isDatabaseUpdated(false);
-    console.log("HomaPage transactionadd:", databaseUpdate);
+    //console.log("HomaPage transactionadd:", databaseUpdate);
   };
 
   const handleIncomeCard = () => {
     setIsPopupWindowOpened(true);
     setPopupType("Income");
-    //navigate("/Form", { state: { type: "Income" } });
   };
 
   const handleExpenseCard = () => {
@@ -119,9 +132,6 @@ const HomePage = () => {
   };
   const handleTransactionAddEdit = async () => {
     setIsDatabaseUpdated(true);
-    console.log("transactionAdded:transactionpage: ", isDatabaseUpdated);
-    // const updatedTransactions = await getTransactions(userId, { startingDate, endingDate });
-    // dispatch({ type: "Transactions_Loaded", payload: updatedTransactions });
   };
   const handlePopupSelection = (e) => {
     setPopupSelection(e);
@@ -136,7 +146,7 @@ const HomePage = () => {
    const confirmDelete = async() => {
       try {
         await deleteTransaction(deletingTransactionId);
-        console.log("deleted", setDeletingTransactionId);
+        //console.log("deleted", setDeletingTransactionId);
         dispatch({
           type: "Transactions_Loaded",
           payload: transactionItems.filter((item) => item.transactionId !== deletingTransactionId),
@@ -146,11 +156,11 @@ const HomePage = () => {
         message.success("Successfully deleted the transaction!")
   
         setIsDatabaseUpdated(!isDatabaseUpdated);
-        console.log("transactionDelete:transactionpage: ", isDatabaseUpdated);
+       // console.log("transactionDelete:transactionpage: ", isDatabaseUpdated);
         dispatch({ type: "Transaction_Deleted", payload: deletingTransactionId});
         
       } catch (error) {
-        console.error("Error deleting transaction:", error);
+        //console.error("Error deleting transaction:", error);
         message.error("Deletion failed!")
       }
       setShowDeleteModal(false);
@@ -165,7 +175,7 @@ const HomePage = () => {
 
   const handleMaximizeToggle = () => {
     setIsMaximized(!isMaximized);
-    console.log("homeToggle:",isMaximized);
+    //console.log("homeToggle:",isMaximized);
   };
 
   const handleDateRange = (e) => {
@@ -324,6 +334,7 @@ const HomePage = () => {
           value={selectedRange} 
           onChange={handleDateRange} 
           className="w-full bg-transparent border border-gray-300 rounded-lg text-black text-sm py-2 px-4 focus:outline-none focus:ring-2 focus:ring-green-500">
+          <option value="">Select an option</option>
           <option value="anyTime">Any time</option>
           <option value="today">Today</option>
           <option value="yesterday">Yesterday</option>
@@ -515,6 +526,9 @@ const HomePage = () => {
         <TransactionPage  startingDate={startingDate} endingDate={endingDate} databaseUpdate={handleDatabaseUpdate} 
         popupSelection={handlePopupSelection} onMaximizeToggle={handleMaximizeToggle} maxStatus={isMaximized}  deletemodelSelection={handleDeleteModelSelection}/>
       </div>
+      <div>
+        {bocAccounts}
+      </div>
       
       {/* Popup Transaction Page */}
       {isPopupWindowOpened && (
@@ -572,8 +586,6 @@ const HomePage = () => {
     </div>
   </div>
 </div>
-
-    
   );
 };
 export default HomePage;

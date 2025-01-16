@@ -55,7 +55,7 @@ const TransactionPage = ({ startingDate, endingDate, databaseUpdate, popupSelect
 
   useEffect(() => {
     const loadTransactions = getTransactions(userId, { startingDate, endingDate});
-    console.log("starting Date(tpage):", startingDate);
+    //console.log("starting Date(tpage):", startingDate);
     const loadCategories = getCategories(userId);
     loadCategories.then(categoriesData => {
       //setCategories(categoriesData);
@@ -113,7 +113,7 @@ const TransactionPage = ({ startingDate, endingDate, databaseUpdate, popupSelect
   };
 
   const handleIncomeCategoryChange = value => {
-    console.log("refunds:", value);
+    //console.log("refunds:", value);
     setSelectedCategory(value);
 
   };
@@ -217,16 +217,15 @@ const TransactionPage = ({ startingDate, endingDate, databaseUpdate, popupSelect
             </div>
             
             <div className="lg:flex hidden items-center justify-end  ">
-                  <button
-                    className=" focus:outline-none text-xl font-extrabold justify-end m-4 focus:test-gray-500  "
-                    onClick={handleMaximizeToggle}
-                  >
-                    {
-                      maxStatus?
-                      <FiMinimize className=" text-white" />:<FiMaximize className=" text-black"/>
-                    }  
-                  </button>
-               
+              <button
+                className=" focus:outline-none text-xl font-extrabold justify-end m-4 focus:test-gray-500  "
+                onClick={handleMaximizeToggle}
+              >
+                {
+                  maxStatus?
+                  <FiMinimize className=" text-white" />:<FiMaximize className=" text-black"/>
+                }  
+              </button>
             </div>
           </div>
           <div className="backdrop-blur-md md:mx-5 mx-3 mb-5 bg-white/90 md:p-5 p-2  rounded-xl overflow-hidden hover:overflow-auto ">

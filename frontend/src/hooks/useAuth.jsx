@@ -1,5 +1,7 @@
 import { useState, createContext, useContext, useEffect } from 'react';
-import { loginTo } from '../Services/userService';
+import { googleLoginTo, loginTo } from '../Services/userService';
+import { googleLogin } from '../Services/userService';
+import { Snackbar, Alert } from '@mui/material';
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
@@ -9,12 +11,13 @@ export const AuthProvider = ({ children }) => {
     const [userName, setUserName] = useState(null);
     const [token, setToken] = useState(null);
     const [loading, setLoading] = useState(true); 
+    const [snackMessage, setSnackMessage] = useState({message:"", severity:""});
 
     useEffect(() => {
       const savedData = localStorage.getItem("token");
       const userId = localStorage.getItem("userId");
       const userName = localStorage.getItem("userName");
-      console.log("Saved user data: ", savedData);
+      //console.log("Saved user data: ", savedData);
       setLoading(true);
       if (savedData) {
         try {
@@ -23,7 +26,7 @@ export const AuthProvider = ({ children }) => {
           setToken(savedData);
           setUserId(userId);
           setUserName(userName);
-          console.log("User restored from storage:", savedData);
+          //console.log("User restored from storage:", savedData);
         } catch (error) {
           console.error("Error parsing user data from storage:", error);
           localStorage.removeItem("token");
@@ -54,6 +57,25 @@ export const AuthProvider = ({ children }) => {
 
     };
 
+    const googleLogin = async (data) => {
+      try {
+          const response = await googleLoginTo(data);
+          const { userId, userName, email } = response.data;
+          localStorage.setItem('userId', userId);
+          localStorage.setItem('userName', userName);
+          localStorage.setItem('email', email);
+          setLoading(false);
+          setUserId(userId);
+          setUserName(userName);
+          setIsAuthenticated(true);
+          //console.log("Login successful:", response.data);
+      } catch (error) {
+        console.error("Google login failed:", error);
+        setSnackMessage({ message: "Google login failed. Please try again.", severity: "error" });
+      }
+    };
+    
+
     const logout = () => {
         localStorage.removeItem('token'); 
         localStorage.removeItem('userId'); 
@@ -65,7 +87,7 @@ export const AuthProvider = ({ children }) => {
       };
 
     return(
-        <AuthContext.Provider value={{ isAuthenticated, login, logout, userId, userName, loading}}>
+        <AuthContext.Provider value={{ isAuthenticated, login, logout, googleLogin, userId, userName, loading}}>
             { children }
         </AuthContext.Provider>
     );    

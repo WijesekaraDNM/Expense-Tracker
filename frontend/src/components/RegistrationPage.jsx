@@ -55,8 +55,8 @@ const Registration = () => {
     const errors = {};
     switch(name){
       case "userName":
-        if (!name) {
-          errors.userName = "User Name is required";
+        if (!value) {
+          errors.userName = "Username is required";
         } else if (value.length < 4 || value.length > 20) {
           errors.userName = "Username must be between 4 and 20 characters.";
         } else if (!/^[a-zA-Z0-9_-]+$/.test(value)) {
@@ -64,7 +64,7 @@ const Registration = () => {
         };
         break;
       case "email":  
-        if (!name) {
+        if (!value) {
           errors.email = "Email is required";
         } else {
           const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/; // General email syntax
@@ -77,7 +77,7 @@ const Registration = () => {
         };
         break;
       case "password":  
-        if (!name) {
+        if (!value) {
           errors.password = "Password is required";
         } else if (!/^(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{6,}$/.test(value)) {
           errors.password = "Password must be at least 6 characters long and include a special character";
@@ -86,10 +86,6 @@ const Registration = () => {
       default:
         break;  
     };
-    // if (!prefferedSequence) {
-    //   errors.prefferedSequence = "Preferred Sequence is required";
-    // }
-  
     return errors;
   };
 
@@ -126,11 +122,9 @@ const Registration = () => {
       setEmail("");
       setPassword("");
       setLoading(false);
-      //setPrefferedSequence("");
       setTimeout(() => {
         setLoading(false);
         window.location.href = "/";
-        //navigate("/login");
       }, 2000);
     } catch (error) {
       console.error("System error:", error);

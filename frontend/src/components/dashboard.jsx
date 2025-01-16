@@ -14,7 +14,6 @@ import {
   ComposedChart,
   Legend
 } from "recharts";
-//import { BarChart } from '@mui/x-charts/BarChart';
 import { axisClasses } from "@mui/x-charts/ChartsAxis";
 import { useMediaQuery } from "@mui/material";
 import {
@@ -41,29 +40,6 @@ const Dashboard = ({
     expense: []
   });
 
-  // const incomeColorPalette = [
-  //   "#228B22", // Forest Green
-  //   "#87CEEB", // Sky Blue
-  //   "#2E8B57", // Sea Green
-  //   "#4682B4", // Steel Blue
-  //   "#90EE90", // Light Green
-  //   "#40E0D0", // Turquoise
-  //   "#6A5ACD", // Slate Blue
-  //   "#98FF98", // Pale Green
-  //   "#00FF7F", // Spring Green
-  //   "#20B2AA", // Light Sea Green
-  //   "#32CD32", // Lime Green
-  //   "#3CB371", // Medium Sea Green
-  //   "#7FFF00", // Chartreuse
-  //   "#00FA9A", // Medium Spring Green
-  //   "#8FBC8F", // Dark Sea Green
-  //   "#00FF00", // Lime
-  //   "#ADFF2F", // Green Yellow
-  //   "#00FF00", // Lime (duplicate)
-  //   "#9ACD32", // Yellow Green
-  //   "#66CDAA" // Medium Aquamarine
-  // ];
-
   const incomeColorPalette = [
     "#00CED1", // Dark Turquoise
     "#40E0D0", // Turquoise
@@ -87,30 +63,6 @@ const Dashboard = ({
     "#00FF7F"  // Spring Green
   ];
   
-
-  // const expenseColorPalette = [
-  //   "#DC143C", // Crimson
-  //   "#333333", // Dark Gray
-  //   "#B22222", // Firebrick
-  //   "#708090", // Slate Gray
-  //   "#F08080", // Light Coral
-  //   "#B2BEB5", // Ash Gray
-  //   "#8B0000", // Dark Red
-  //   "#C0C0C0", // Silver
-  //   "#FF6347", // Tomato
-  //   "#A52A2A", // Brown
-  //   "#CD5C5C", // Indian Red
-  //   "#D2691E", // Chocolate
-  //   "#FF4500", // Orange Red
-  //   "#FF0000", // Red
-  //   "#F5DEB3", // Wheat
-  //   "#FF8C00", // Dark Orange
-  //   "#B8860B", // Dark Goldenrod
-  //   "#D3D3D3", // Light Gray
-  //   "#C71585", // Medium Violet Red
-  //   "#E9967A" // Dark Salmon
-  // ];
-
   const expenseColorPalette = [
     "#E57342", // Burnt Orange
     "#FF8C42", // Deep Saffron
@@ -172,8 +124,8 @@ const Dashboard = ({
 
   useEffect(
     () => {
-      console.log("Local Starting Date(dash): ", startingDate);
-      console.log("Local Ending Date(dash): ", endingDate);
+      //console.log("Local Starting Date(dash): ", startingDate);
+      //console.log("Local Ending Date(dash): ", endingDate);
       const loadCalculations = calculateTransactions(userId, {
         startingDate,
         endingDate
@@ -184,7 +136,7 @@ const Dashboard = ({
       });
       loadCalculations.then(fetchedData => {
         setCalculations(fetchedData);
-        console.log("load calculations:", fetchedData);
+        //console.log("load calculations:", fetchedData);
       });
       loadCategoricalAmounts.then(fetchData => {
         setCategoricalCalculations(fetchData);
@@ -292,13 +244,13 @@ const Dashboard = ({
     const categoryIndex = typeof index === 'object' && index !== null ? index.dataIndex : index;
     const category = incomeData[categoryIndex]?.id;
     setSelectedIncomeCategory(category);
-    console.log('Selected Category:', category);
+    //console.log('Selected Category:', category);
   };
   const handleExpenseSliceClick = (event,index) => {
     const categoryIndex = typeof index === 'object' && index !== null ? index.dataIndex : index;
     const category = expenseData[categoryIndex]?.id;
     setSelectedExpenseCategory(category);
-    console.log('Selected Category:', category);
+    //console.log('Selected Category:', category);
   };
   const selectedIncomeAmount = incomeData.find(item => item.id === selectedIncomeCategory)?.value;
   const selectedExpenseAmount = expenseData.find(item => item.id === selectedExpenseCategory)?.value;
@@ -337,8 +289,15 @@ const Dashboard = ({
   const handleTest = () =>{
     
   }
-
+  const [isContainerReady, setIsContainerReady] = useState(false);
   const valueFormatter = value => `$${value}`;
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsContainerReady(true);
+    }, 1000); // Adjust the timeout as needed
+    return () => clearTimeout(timer);
+  }, []);
+  
 
   return (
     <>
@@ -358,6 +317,7 @@ const Dashboard = ({
                     ? dataForChart[0].title
                     : "Default Title"}
                 </h1>
+                {isContainerReady && (
                 <ResponsiveContainer
                   width="100%"
                   height="80%"
@@ -463,7 +423,7 @@ const Dashboard = ({
                       opacity={"50%"}
                     />
                   </ComposedChart>
-                </ResponsiveContainer>
+                </ResponsiveContainer>)}
               </div>
               <div className=" lg:col-span-3 flex items-center justify-center w-full md:gap-5 gap-2 h-[25vh] ">
                 <div
@@ -604,11 +564,6 @@ const Dashboard = ({
                             </span>
                           </div>
                         : <span className=" text-3xl text-[#EF854B] font-serif">
-                            {/* <img
-                              src="/money_Decrease.png"
-                              alt=""
-                              className=" bg-cover w-14 h-14"
-                            /> */}
                              {(calculations.totalExpense/(calculations.totalIncome+ calculations.totalExpense)*100).toFixed(0)}%
                           </span>}
                     </div>
