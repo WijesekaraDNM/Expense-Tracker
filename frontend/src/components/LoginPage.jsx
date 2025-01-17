@@ -7,6 +7,7 @@ import { FaEye, FaEyeSlash } from "react-icons/fa6";
 import { gapi } from "gapi-script";
 import { GoogleLogin } from "@react-oauth/google";
 import { googleLoginTo } from '../Services/userService';
+import loginnew1 from '../asserts/loginnew1.jpg';
 
 const LoginPage = () => {
   const { login, googleLogin } = useAuth();
@@ -177,7 +178,7 @@ const LoginPage = () => {
       {/* Left Side: Image */}
       <div className="hidden md:flex justify-center items-center w-1/2 bg-cover bg-center">
         {/* Optionally, you can add text or overlay styles here */}
-        <img className=" w-full h-3/4 bg-cover bg-center" src="/loginnew1.JPG" alt="login"/>
+        <img className=" w-full h-3/4 bg-cover bg-center" src={loginnew1} alt="login"/>
       </div>
 
       {/* Right Side: Form */}
