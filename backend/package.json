@@ -5,11 +5,9 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "dev": "nodemon src/server.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "eject": "react-scripts eject"
+     "dev": "nodemon src/server.js",
+    "start": "node src/server.js"
   },
   "keywords": [],
   "author": "",
