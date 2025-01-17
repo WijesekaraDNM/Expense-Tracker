@@ -177,7 +177,7 @@ const LoginPage = () => {
       {/* Left Side: Image */}
       <div className="hidden md:flex justify-center items-center w-1/2 bg-cover bg-center">
         {/* Optionally, you can add text or overlay styles here */}
-        <div className=" w-full h-3/4 bg-cover bg-center" style={{ backgroundImage: "url('/loginnew1.JPG')" }}></div>
+        <img className=" w-full h-3/4 bg-cover bg-center" src="/loginnew1.JPG" alt="login"/>
       </div>
 
       {/* Right Side: Form */}

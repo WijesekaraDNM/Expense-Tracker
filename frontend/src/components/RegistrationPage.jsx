@@ -153,7 +153,7 @@ const Registration = () => {
       {/* Left Side: Image */}
       <div className="hidden md:flex w-1/2 items-center justify-center bg-cover bg-center">
         {/* Optionally, you can add text or overlay styles here */}
-        <div className=" w-full h-3/4 bg-cover bg-center" style={{ backgroundImage: "url('/registrationNew.JPG')" }}></div>
+        <img className=" w-full h-3/4 bg-cover bg-center" src="/registrationNew.JPG" alt="registration" />
       </div>
 
       {/* Right Side: Form */}
