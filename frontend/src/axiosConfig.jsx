@@ -1,3 +1,3 @@
 import axios from "axios";
 
-axios.defaults.baseURL =  'http://localhost:5174';
+axios.defaults.baseURL =  'https://localhost:5174';

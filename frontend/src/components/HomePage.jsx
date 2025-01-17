@@ -11,14 +11,12 @@ import TransactionForm from "./common/transactionForm";
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import  "./../index.css";
-import { Flex, message } from "antd";
-import { endOfYesterday, format, isYesterday } from "date-fns";
-import { BorderColor } from "@mui/icons-material";
+import { message } from "antd";
+import { format } from "date-fns";
 import { FaXmark } from "react-icons/fa6";
 import { deleteTransaction } from "../Services/transactionService";
 import { GiPayMoney } from "react-icons/gi";
 import { GiReceiveMoney } from "react-icons/gi";
-import { getBOCAccounts } from "../Services/userService";
 
 const initialState = { transactionItems: [] };
 const reducer = (state, action) => {
@@ -45,10 +43,7 @@ const HomePage = () => {
   const [endingDate, setEndingDate] = useState(null);
   const [selectedRange, setSelectedRange] = useState(null);
   const transactionPageRef = useRef(null);
-  const [refreshKey, setRefreshKey] = useState(0);
-  const [databaseUpdate,setDatabaseUpdate] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const { userId } = useAuth();
+  const [setDatabaseUpdate] = useState(false);
   const { userName } = useAuth();
   const [isPopupWindowOpened,setIsPopupWindowOpened]= useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -56,40 +51,37 @@ const HomePage = () => {
   const [isDatabaseUpdated,setIsDatabaseUpdated] = useState(false);
   const [popupType, setPopupType] = useState("");
   const [popupSelection, setPopupSelection] = useState();
-  const leftElementRef = useRef(null);
-  const rightElementRef = useRef(null);
   const [isMaximized, setIsMaximized] = useState(false); 
   const [isCustomSelected, setIsCustomSelected] = useState(false);
-  const [selectedValue, setSelectedValue] = useState(null);
-  const [displayText, setDisplayText] = useState("");
+  //const [ setDisplayText] = useState("");
   const [isChartVisible, setIsChartVisible] = useState(false);
-  const [bocAccounts, setBocAccounts] = useState();
-  const text = "Select a Date Range & get more Information"; // Your desired text
+  const [bocAccounts] = useState();
+  //const text = "Select a Date Range & get more Information"; // Your desired text
 
   useEffect(() => {
-    const fetchAccounts = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        console.log("Token :", token);
-        const response = await getBOCAccounts(token);
-        console.log("Account response in home :", response);
-        setBocAccounts(response.data.accounts); // Adjust as per your response structure
-      } catch (error) {
-        console.error("Error fetching BOC accounts:", error);
-      }
-    };
+    // const fetchAccounts = async () => {
+    //   try {
+    //     const token = localStorage.getItem("token");
+    //     console.log("Token :", token);
+    //     const response = await getBOCAccounts(token);
+    //     console.log("Account response in home :", response);
+    //     setBocAccounts(response.data.accounts); // Adjust as per your response structure
+    //   } catch (error) {
+    //     console.error("Error fetching BOC accounts:", error);
+    //   }
+    // };
   
-    fetchAccounts();
-    let index = 0;
-    const interval = setInterval(() => {
-      setDisplayText((prev) => prev + text[index]);
-      index++;
-      if (index === text.length) {
-        clearInterval(interval);
-      }
-    }, 350); // Adjust typing speed by changing the interval value (in milliseconds)
+    // fetchAccounts();
+    // let index = 0;
+    // const interval = setInterval(() => {
+    //   setDisplayText((prev) => prev + text[index]);
+    //   index++;
+    //   if (index === text.length) {
+    //     clearInterval(interval);
+    //   }
+    // }, 350); // Adjust typing speed by changing the interval value (in milliseconds)
 
-    return () => clearInterval(interval); // Cleanup interval on component unmount
+    // return () => clearInterval(interval); // Cleanup interval on component unmount
   }, []);
 
 
@@ -98,15 +90,15 @@ const HomePage = () => {
     await logout();
   };
 
-  const handleScrollToTransactionPage = () => {
+  // const handleScrollToTransactionPage = () => {
 
-    if (transactionPageRef.current) {
-      transactionPageRef.current.scrollIntoView({
-        behavior: 'smooth', // for smooth scrolling
-        block: 'start'      // scroll to the top of the element
-      });
-    }
-  };
+  //   if (transactionPageRef.current) {
+  //     transactionPageRef.current.scrollIntoView({
+  //       behavior: 'smooth', // for smooth scrolling
+  //       block: 'start'      // scroll to the top of the element
+  //     });
+  //   }
+  // };
 
   const handleDatabaseUpdate = () => {
     if(isDatabaseUpdated){
@@ -166,12 +158,12 @@ const HomePage = () => {
       setShowDeleteModal(false);
     };
 
-  const handleStartingDate = e => {
-    setStartingDate(e.target.value);
-  };
-  const handleEndingDate = e => {
-    setEndingDate(e.target.value);
-  };
+  // const handleStartingDate = e => {
+  //   setStartingDate(e.target.value);
+  // };
+  // const handleEndingDate = e => {
+  //   setEndingDate(e.target.value);
+  // };
 
   const handleMaximizeToggle = () => {
     setIsMaximized(!isMaximized);
